@@ -3,5 +3,5 @@ export interface UserVerify {
     lastName: string;
     emailAddress: string;
     password: string;
-    passwordConfirm: string;
+    passwordConfirmation: string;
 }

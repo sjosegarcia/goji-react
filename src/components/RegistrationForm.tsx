@@ -1,9 +1,22 @@
 import React from 'react'
 import { UserVerify } from 'types/user.interface';
 import { useForm, SubmitHandler } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const RegistrationForms = () => {
-    const { register, handleSubmit, watch, formState: {errors} } = useForm<UserVerify>({defaultValues: {firstName: '', lastName: '', emailAddress: '', password: '', passwordConfirm: ''}});
+
+    const schema = yup.object().shape({
+        firstName: yup.string().max(20).required('Please provide your first name'),
+        lastName: yup.string().required('Please provide your last name'),
+        emailAddress: yup.string().email("Please provide a valid email address").required('Please provide a valid email address'),
+        password: yup.string().required('Please provide a valid password').matches(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+      "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"),
+        passwordConfirmation: yup.string().required().oneOf([yup.ref('password'), null], 'Passwords do not match')
+    });
+
+    const { register, handleSubmit, formState: {errors} } = useForm<UserVerify>({defaultValues: {firstName: '', lastName: '', emailAddress: '', password: '', passwordConfirmation: ''}, resolver: yupResolver(schema)});
     const onSubmit: SubmitHandler<UserVerify> = data => console.log(data);
 
     return (
@@ -17,34 +30,34 @@ const RegistrationForms = () => {
                         <div className="flex justify-between">
                             <label className="block text-gray-700 text-sm font-bold mb-2">First Name</label>
                         </div>
-                        <input {...register("firstName", { required: true, maxLength: 20 })} className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" type="firstname"/>
-                        {errors.firstName && <span>This is a required field</span>}
+                        <input {...register("firstName")} className={`text-gray-700 focus:outline-none focus:shadow-outline border ${errors.firstName ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="firstname"/>
+                        {errors.firstName && <span className='text-bold text-red-500'>{errors.firstName.message}</span>}
                     </div>
                     <div className="mt-4">
                         <div className="flex justify-between">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
                         </div>
-                        <input {...register("lastName", { required: true, pattern: /^[A-Za-z]+$/i })} className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" type="lastname"/>
-                        {errors.lastName && <span>This is a required field</span>}
+                        <input {...register("lastName")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.lastName ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="lastname"/>
+                        {errors.lastName && <span className='text-bold text-red-500'>{errors.lastName.message}</span>}
                     </div>
                     <div className="mt-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                        <input {...register("emailAddress", { required: true })} className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" type="email"/>
-                        {errors.emailAddress && <span>This is a required field</span>}
+                        <input {...register("emailAddress")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.lastName ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="email"/>
+                        {errors.emailAddress && <span className='text-bold text-red-500'>{errors.emailAddress.message}</span>}
                     </div>
                     <div className="mt-4">
                         <div className="flex justify-between">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
                         </div>
-                        <input {...register("password", { required: true })} className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" type="password"/>
-                        {errors.password && <span>This is a required field</span>}
+                        <input {...register("password")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.lastName ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="password"/>
+                        {errors.password && <span className='text-bold text-red-500'>{errors.password.message}</span>}
                     </div>
                     <div className="mt-4">
                         <div className="flex justify-between">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
                         </div>
-                        <input {...register("passwordConfirm", { required: true })} className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" type="password"/>
-                        {errors.passwordConfirm && <span>This is a required field</span>}
+                        <input {...register("passwordConfirmation")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.lastName ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="password"/>
+                        {errors.passwordConfirmation && <span className='text-bold text-red-500'>{errors.passwordConfirmation.message}</span>}
                     </div>
                     <div className="mt-8">
                     <button onClick={handleSubmit(onSubmit)} className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300">Sign Up</button>
