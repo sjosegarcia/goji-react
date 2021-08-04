@@ -5,3 +5,8 @@ export interface UserVerify {
     password: string;
     passwordConfirmation: string;
 }
+
+export interface Login {
+    emailAddress: string;
+    password: string;
+}

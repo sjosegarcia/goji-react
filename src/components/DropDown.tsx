@@ -19,14 +19,17 @@ const Dropdown = (props: DropDownProps) => {
             <Link to='/' className='p-4'>
                 Home
             </Link>
-            <Link to='/menu' className='p-4'>
-                Menu
-            </Link>
             <Link to='/about' className='p-4'>
                 About
             </Link>
-            <Link to='/contact' className='p-4'>
-                Contact
+            <Link to='/docs' className='p-4'>
+                Docs
+            </Link>
+            <Link to='/social' className='p-4'>
+                Social
+            </Link>
+            <Link to='/login' className='p-4'>
+                Login
             </Link>
         </div>
     );

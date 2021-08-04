@@ -36,8 +36,9 @@ function App() {
       <Dropdown isOpen={isOpen} toggle={toggle} />
       <Switch>
         <Route path='/' exact component={Home} />
-        <Route path='/menu' />
         <Route path='/about' />
+        <Route path='/docs' />
+        <Route path='/social' />
         <Route path='/login' component={Login} />
         <Route path='/signup' component={Signup} />
       </Switch>

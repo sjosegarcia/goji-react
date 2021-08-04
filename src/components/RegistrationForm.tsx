@@ -9,11 +9,11 @@ const RegistrationForms = () => {
     const schema = yup.object().shape({
         firstName: yup.string().max(20).required('Please provide your first name'),
         lastName: yup.string().required('Please provide your last name'),
-        emailAddress: yup.string().email("Please provide a valid email address").required('Please provide a valid email address'),
+        emailAddress: yup.string().email('Please provide a valid email address').required('Please provide a valid email address'),
         password: yup.string().required('Please provide a valid password').matches(
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
       "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"),
-        passwordConfirmation: yup.string().required().oneOf([yup.ref('password'), null], 'Passwords do not match')
+        passwordConfirmation: yup.string().required('Please confirm your password').oneOf([yup.ref('password'), null], 'Passwords do not match')
     });
 
     const { register, handleSubmit, formState: {errors} } = useForm<UserVerify>({defaultValues: {firstName: '', lastName: '', emailAddress: '', password: '', passwordConfirmation: ''}, resolver: yupResolver(schema)});
@@ -42,21 +42,21 @@ const RegistrationForms = () => {
                     </div>
                     <div className="mt-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                        <input {...register("emailAddress")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.lastName ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="email"/>
+                        <input {...register("emailAddress")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.emailAddress ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="email"/>
                         {errors.emailAddress && <span className='text-bold text-red-500'>{errors.emailAddress.message}</span>}
                     </div>
                     <div className="mt-4">
                         <div className="flex justify-between">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
                         </div>
-                        <input {...register("password")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.lastName ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="password"/>
+                        <input {...register("password")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.password ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="password"/>
                         {errors.password && <span className='text-bold text-red-500'>{errors.password.message}</span>}
                     </div>
                     <div className="mt-4">
                         <div className="flex justify-between">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
                         </div>
-                        <input {...register("passwordConfirmation")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.lastName ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="password"/>
+                        <input {...register("passwordConfirmation")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.passwordConfirmation ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="password"/>
                         {errors.passwordConfirmation && <span className='text-bold text-red-500'>{errors.passwordConfirmation.message}</span>}
                     </div>
                     <div className="mt-8">

@@ -1,6 +1,19 @@
 import React from 'react';
+import { useForm, SubmitHandler } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Login } from 'types/user.interface';
 
 const LoginForms = () => {
+
+    const schema = yup.object().shape({
+        emailAddress: yup.string().email('Please provide a valid email address').required('Please provide a valid email address'),
+        password: yup.string().required('Please provide a valid password')
+    });
+
+    const { register, handleSubmit, formState: {errors} } = useForm<Login>({defaultValues: {emailAddress: '', password: ''}, resolver: yupResolver(schema)});
+    const onSubmit: SubmitHandler<Login> = data => console.log(data);
+
     return (
     <div className='bg-white h-screen flex flex-col justify-center'>
         <div className="py-6">
@@ -33,17 +46,19 @@ const LoginForms = () => {
                 </div>
                 <div className="mt-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                    <input className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" type="email"/>
+                    <input {...register("emailAddress")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.emailAddress ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="email"/>
+                    {errors.emailAddress && <span className='text-bold text-red-500'>{errors.emailAddress.message}</span>}  
                 </div>
                 <div className="mt-4">
                     <div className="flex justify-between">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
                         <a href="/" className="text-xs text-gray-500">Forget Password?</a>
                     </div>
-                    <input className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none" type="password"/>
-                </div>
+                        <input {...register("password")} className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${errors.password ? "border-red-500 bg-red-200" : "border-gray-300 bg-gray-200"} rounded py-2 px-4 block w-full appearance-none`} type="password"/>
+                        {errors.password && <span className='text-bold text-red-500'>{errors.password.message}</span>}
+                    </div>
                 <div className="mt-8">
-                    <button className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300">Login</button>
+                    <button onClick={handleSubmit(onSubmit)} className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300">Login</button>
                 </div>
                 <div className="mt-4 flex items-center justify-between">
                     <span className="border-b w-1/5 md:w-1/4"></span>
