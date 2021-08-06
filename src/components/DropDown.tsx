@@ -1,5 +1,7 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
+import { auth } from '../lib/firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 type DropDownProps = {
 	isOpen: boolean;
@@ -7,6 +9,10 @@ type DropDownProps = {
 };
 
 const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
+	const [user] = useAuthState(auth);
+
+	const signOut = () => auth.signOut();
+
 	return (
 		<div
 			className={
@@ -28,9 +34,21 @@ const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 			<Link to="/social" className="p-4">
 				Social
 			</Link>
-			<Link to="/login" className="p-4">
-				Login
-			</Link>
+			{user && (
+				<Link to="/profile" className="p-4">
+					Profile
+				</Link>
+			)}
+			{!user && (
+				<Link to="/login" className="p-4">
+					Login
+				</Link>
+			)}
+			{user && (
+				<Link to="/" onClick={signOut} className="p-4">
+					Sign Out
+				</Link>
+			)}
 		</div>
 	);
 };
