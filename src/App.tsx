@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import './App.css';
-import Signup from 'pages/signup';
-import Home from './pages/home';
+import Signup from 'pages/Signup';
+import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Dropdown from './components/DropDown';
-import Login from './pages/login';
+import Login from './pages/Login';
+import ForgotPassword from 'pages/ForgotPassword';
 
 function App() {
 	const [isOpen, setIsOpen] = useState(false);
@@ -40,6 +41,7 @@ function App() {
 				<Route path="/social" />
 				<Route path="/login" component={Login} />
 				<Route path="/signup" component={Signup} />
+				<Route path="/forgot-password" component={ForgotPassword} />
 			</Switch>
 			<Footer />
 		</>

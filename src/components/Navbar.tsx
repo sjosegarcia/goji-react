@@ -36,7 +36,6 @@ const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 					/>
 				</svg>
 			</div>
-			<span>{user === undefined}</span>
 			<div className="pr-8 md:block  hidden">
 				<Link to="/" className="p-4">
 					Home

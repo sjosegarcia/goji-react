@@ -3,6 +3,9 @@ import { UserVerify } from 'types/user.interface';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { auth } from '../lib/firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { Redirect } from 'react-router-dom';
 
 const RegistrationForms: FC = () => {
 	const schema = yup.object().shape({
@@ -41,15 +44,18 @@ const RegistrationForms: FC = () => {
 	});
 	const onSubmit: SubmitHandler<UserVerify> = (data) => console.log(data);
 
+	const [user] = useAuthState(auth);
+
+	if (user) return <Redirect to="/" />;
+
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
 			<div className="py-6">
 				<div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
 					<div className="w-full p-8 lg:w">
 						<h2 className="text-2xl font-semibold text-gray-700 text-center">
-							GODZ
+							Registration
 						</h2>
-						<p className="text-xl text-gray-600 text-center">Welcome back!</p>
 						<div className="mt-4">
 							<div className="flex justify-between">
 								<label className="block text-gray-700 text-sm font-bold mb-2">

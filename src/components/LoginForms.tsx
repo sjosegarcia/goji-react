@@ -4,12 +4,22 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Login } from 'types/user.interface';
 import { auth, firebaseAuthProviders } from '../lib/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import {
+	useAuthState,
+	useSignInWithEmailAndPassword,
+} from 'react-firebase-hooks/auth';
 import { Redirect } from 'react-router-dom';
 
 const LoginForms: FC = () => {
 	const googleAuth = new firebaseAuthProviders.GoogleAuthProvider();
 	const appleAuth = new firebaseAuthProviders.OAuthProvider('apple.com');
+
+	const [
+		signInWithEmailAndPassword,
+		emailAndPassUser,
+		emailAndPassLoading,
+		emailAndPassError,
+	] = useSignInWithEmailAndPassword(auth);
 
 	function signInWithGoogle() {
 		return auth.signInWithPopup(googleAuth);
@@ -17,10 +27,6 @@ const LoginForms: FC = () => {
 
 	function signInWithApple() {
 		return auth.signInWithPopup(appleAuth);
-	}
-
-	function signInWithEmailAndPassword(emailAddress: string, password: string) {
-		return auth.signInWithEmailAndPassword(emailAddress, password);
 	}
 
 	const schema = yup.object().shape({
@@ -42,9 +48,9 @@ const LoginForms: FC = () => {
 	const onSubmit: SubmitHandler<Login> = (data) =>
 		signInWithEmailAndPassword(data.emailAddress, data.password);
 
-	const [user, loading, error] = useAuthState(auth);
+	const [user] = useAuthState(auth);
 
-	if (user) return <Redirect to="/" />;
+	if (user || emailAndPassUser) return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
@@ -136,7 +142,7 @@ const LoginForms: FC = () => {
 								<label className="block text-gray-700 text-sm font-bold mb-2">
 									Password
 								</label>
-								<a href="/" className="text-xs text-gray-500">
+								<a href="/forgot-password" className="text-xs text-gray-500">
 									Forget Password?
 								</a>
 							</div>
@@ -156,12 +162,14 @@ const LoginForms: FC = () => {
 							)}
 						</div>
 						<div className="mt-8">
-							{error && (
-								<span className="text-bold text-xs text-red-500">{error}</span>
+							{emailAndPassError && (
+								<span className="text-bold text-xs text-red-500">
+									{emailAndPassError.message}
+								</span>
 							)}
 							<button
 								onClick={handleSubmit(onSubmit)}
-								disabled={loading}
+								disabled={emailAndPassLoading}
 								className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300"
 							>
 								Login
