@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { FC } from 'react';
 import RegistrationForms from 'components/RegistrationForm';
 
-const Signup = () => {
-    return (
-        <>
-            <RegistrationForms />
-        </>
-    );
+const Signup: FC = () => {
+	return (
+		<>
+			<RegistrationForms />
+		</>
+	);
 };
 
 export default Signup;

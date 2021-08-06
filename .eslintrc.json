@@ -6,12 +6,16 @@
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "prettier",
-        "airbnb-typescript"
+        //"plugin:@typescript-eslint/recommended",
+        //"airbnb-typescript",
+        "prettier"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
+        "project": [
+            "tsconfig.json",
+            "tailwind.config.js"
+        ],
         "ecmaFeatures": {
             "jsx": true
         },
@@ -20,16 +24,26 @@
     },
     "plugins": [
         "react",
-        "@typescript-eslint",
+        //"@typescript-eslint",
         "prettier"
     ],
     "rules": {
-        "prettier/prettier": "error",
-        "no-unused-vars": "warn",
+        "indent": [
+            "error",
+            "tab"
+        ],
+        "prettier/prettier": [
+            2,
+            {
+                "useTabs": true
+            }
+        ],
+        "no-unused-vars": "off",
         "no-console": "off",
         "func-names": "off",
         "no-process-exit": "off",
         "object-shorthand": "off",
-        "class-methods-use-this": "off"
+        "class-methods-use-this": "off",
+        "no-undef": "off"
     }
 }
