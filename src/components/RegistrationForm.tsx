@@ -1,11 +1,15 @@
 import React, { FC } from 'react';
 import { UserVerify } from 'types/user.interface';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import {
+	useAuthState,
+	useCreateUserWithEmailAndPassword,
+} from 'react-firebase-hooks/auth';
 import { Redirect } from 'react-router-dom';
+import cookie from 'react-cookies';
 
 const RegistrationForms: FC = () => {
 	const schema = yup.object().shape({
@@ -42,11 +46,26 @@ const RegistrationForms: FC = () => {
 		},
 		resolver: yupResolver(schema),
 	});
-	const onSubmit: SubmitHandler<UserVerify> = (data) => console.log(data);
+
+	const [
+		createUserWithEmailAndPassword,
+		createdUser,
+		createdUserLoading,
+		createdUserError,
+	] = useCreateUserWithEmailAndPassword(auth);
+
+	const onSubmit: SubmitHandler<UserVerify> = async (data) => {
+		createUserWithEmailAndPassword(data.emailAddress, data.password);
+		let idToken = (await user?.getIdToken()) as string;
+		cookie.save('idToken', idToken, { path: '/' });
+	};
 
 	const [user] = useAuthState(auth);
 
-	if (user) return <Redirect to="/" />;
+	const textBoxColor = (error?: FieldError) =>
+		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
+
+	if (user || createdUser) return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
@@ -64,11 +83,9 @@ const RegistrationForms: FC = () => {
 							</div>
 							<input
 								{...register('firstName')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border ${
+								className={`text-gray-700 focus:outline-none focus:shadow-outline border ${textBoxColor(
 									errors.firstName
-										? 'border-red-500 bg-red-200'
-										: 'border-gray-300 bg-gray-200'
-								} rounded py-2 px-4 block w-full appearance-none`}
+								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="firstname"
 							/>
 							{errors.firstName && (
@@ -85,11 +102,9 @@ const RegistrationForms: FC = () => {
 							</div>
 							<input
 								{...register('lastName')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${
+								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
 									errors.lastName
-										? 'border-red-500 bg-red-200'
-										: 'border-gray-300 bg-gray-200'
-								} rounded py-2 px-4 block w-full appearance-none`}
+								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="lastname"
 							/>
 							{errors.lastName && (
@@ -104,11 +119,9 @@ const RegistrationForms: FC = () => {
 							</label>
 							<input
 								{...register('emailAddress')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${
+								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
 									errors.emailAddress
-										? 'border-red-500 bg-red-200'
-										: 'border-gray-300 bg-gray-200'
-								} rounded py-2 px-4 block w-full appearance-none`}
+								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
 							/>
 							{errors.emailAddress && (
@@ -125,11 +138,9 @@ const RegistrationForms: FC = () => {
 							</div>
 							<input
 								{...register('password')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${
+								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
 									errors.password
-										? 'border-red-500 bg-red-200'
-										: 'border-gray-300 bg-gray-200'
-								} rounded py-2 px-4 block w-full appearance-none`}
+								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="password"
 							/>
 							{errors.password && (
@@ -146,11 +157,9 @@ const RegistrationForms: FC = () => {
 							</div>
 							<input
 								{...register('passwordConfirmation')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${
+								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
 									errors.passwordConfirmation
-										? 'border-red-500 bg-red-200'
-										: 'border-gray-300 bg-gray-200'
-								} rounded py-2 px-4 block w-full appearance-none`}
+								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="password"
 							/>
 							{errors.passwordConfirmation && (
@@ -160,6 +169,11 @@ const RegistrationForms: FC = () => {
 							)}
 						</div>
 						<div className="mt-8">
+							{createdUserError && (
+								<span className="text-bold text-xs text-red-500">
+									{createdUserError.message}
+								</span>
+							)}
 							<button
 								onClick={handleSubmit(onSubmit)}
 								className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300"

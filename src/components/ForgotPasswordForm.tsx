@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Redirect } from 'react-router-dom';
+import { ForgotPassword } from 'types/user.interface';
 
 const ForgotPasswordForms: FC = () => {
 	const schema = yup.object().shape({
@@ -18,15 +19,19 @@ const ForgotPasswordForms: FC = () => {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm({
+	} = useForm<ForgotPassword>({
 		defaultValues: {
 			emailAddress: '',
 		},
 		resolver: yupResolver(schema),
 	});
-	const onSubmit: SubmitHandler<String> = (data) => console.log(data);
+	const onSubmit: SubmitHandler<ForgotPassword> = (data) =>
+		auth.sendPasswordResetEmail(data.emailAddress);
 
 	const [user] = useAuthState(auth);
+
+	const textBoxColor = (error?: FieldError) =>
+		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
 
 	if (user) return <Redirect to="/" />;
 
@@ -44,11 +49,9 @@ const ForgotPasswordForms: FC = () => {
 							</label>
 							<input
 								{...register('emailAddress')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${
+								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
 									errors.emailAddress
-										? 'border-red-500 bg-red-200'
-										: 'border-gray-300 bg-gray-200'
-								} rounded py-2 px-4 block w-full appearance-none`}
+								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
 							/>
 							{errors.emailAddress && (

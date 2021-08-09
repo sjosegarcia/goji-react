@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Login } from 'types/user.interface';
@@ -9,6 +9,7 @@ import {
 	useSignInWithEmailAndPassword,
 } from 'react-firebase-hooks/auth';
 import { Redirect } from 'react-router-dom';
+import cookie from 'react-cookies';
 
 const LoginForms: FC = () => {
 	const googleAuth = new firebaseAuthProviders.GoogleAuthProvider();
@@ -21,13 +22,19 @@ const LoginForms: FC = () => {
 		emailAndPassError,
 	] = useSignInWithEmailAndPassword(auth);
 
-	function signInWithGoogle() {
-		return auth.signInWithPopup(googleAuth);
-	}
+	const signInWithGoogle = async () => {
+		let gAuth = auth.signInWithPopup(googleAuth);
+		let token = (await gAuth).user?.getIdToken();
+		await storeIdToken(token);
+		return gAuth;
+	};
 
-	function signInWithApple() {
-		return auth.signInWithPopup(appleAuth);
-	}
+	const signInWithApple = async () => {
+		let aAuth = auth.signInWithPopup(appleAuth);
+		let token = (await aAuth).user?.getIdToken();
+		await storeIdToken(token);
+		return appleAuth;
+	};
 
 	const schema = yup.object().shape({
 		emailAddress: yup
@@ -45,10 +52,23 @@ const LoginForms: FC = () => {
 		defaultValues: { emailAddress: '', password: '' },
 		resolver: yupResolver(schema),
 	});
-	const onSubmit: SubmitHandler<Login> = (data) =>
-		signInWithEmailAndPassword(data.emailAddress, data.password);
 
 	const [user] = useAuthState(auth);
+
+	const onSubmit: SubmitHandler<Login> = async (data) => {
+		signInWithEmailAndPassword(data.emailAddress, data.password);
+		let idToken = user?.getIdToken();
+		storeIdToken(idToken);
+	};
+
+	const storeIdToken = async (idToken?: Promise<string>) => {
+		if (!idToken) return;
+		let token = await idToken;
+		cookie.save('idToken', token, { path: '/' });
+	};
+
+	const textBoxColor = (error?: FieldError) =>
+		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
 
 	if (user || emailAndPassUser) return <Redirect to="/" />;
 
@@ -124,11 +144,9 @@ const LoginForms: FC = () => {
 							</label>
 							<input
 								{...register('emailAddress')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${
+								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
 									errors.emailAddress
-										? 'border-red-500 bg-red-200'
-										: 'border-gray-300 bg-gray-200'
-								} rounded py-2 px-4 block w-full appearance-none`}
+								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
 							/>
 							{errors.emailAddress && (
@@ -148,11 +166,9 @@ const LoginForms: FC = () => {
 							</div>
 							<input
 								{...register('password')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${
+								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
 									errors.password
-										? 'border-red-500 bg-red-200'
-										: 'border-gray-300 bg-gray-200'
-								} rounded py-2 px-4 block w-full appearance-none`}
+								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="password"
 							/>
 							{errors.password && (

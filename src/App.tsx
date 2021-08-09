@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import './App.css';
 import Signup from 'pages/Signup';
 import Home from './pages/Home';
@@ -8,9 +8,13 @@ import Footer from './components/Footer';
 import Dropdown from './components/DropDown';
 import Login from './pages/Login';
 import ForgotPassword from 'pages/ForgotPassword';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from './lib/firebase';
 
 function App() {
 	const [isOpen, setIsOpen] = useState(false);
+
+	const [user] = useAuthState(auth);
 
 	const toggle = () => {
 		setIsOpen(!isOpen);
@@ -29,6 +33,26 @@ function App() {
 			window.removeEventListener('resize', hideMenu);
 		};
 	});
+
+	const authRoute = (children: React.ReactNode, { ...rest }) => {
+		return (
+			<Route
+				{...rest}
+				render={({ location }) =>
+					user ? (
+						children
+					) : (
+						<Redirect
+							to={{
+								pathname: '/login',
+								state: { from: location },
+							}}
+						/>
+					)
+				}
+			/>
+		);
+	};
 
 	return (
 		<>
