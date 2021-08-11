@@ -1,15 +1,14 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { UserVerify } from 'types/user.interface';
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
-import {
-	useAuthState,
-	useCreateUserWithEmailAndPassword,
-} from 'react-firebase-hooks/auth';
 import { Redirect } from 'react-router-dom';
-import cookie from 'react-cookies';
+import newUser from 'lib/users/newUsers';
+import storeIdToken from 'lib/token/storeIdToken';
+import { User } from '@firebase/auth-types';
+import { FirebaseAuthErrors } from 'types/firebase.interface';
 
 const RegistrationForms: FC = () => {
 	const schema = yup.object().shape({
@@ -32,6 +31,9 @@ const RegistrationForms: FC = () => {
 			.oneOf([yup.ref('password'), null], 'Passwords do not match'),
 	});
 
+	const [user, setUser] = useState<User | undefined>();
+	const [error, setError] = useState<FirebaseAuthErrors | undefined>();
+
 	const {
 		register,
 		handleSubmit,
@@ -47,25 +49,32 @@ const RegistrationForms: FC = () => {
 		resolver: yupResolver(schema),
 	});
 
-	const [
-		createUserWithEmailAndPassword,
-		createdUser,
-		createdUserLoading,
-		createdUserError,
-	] = useCreateUserWithEmailAndPassword(auth);
-
 	const onSubmit: SubmitHandler<UserVerify> = async (data) => {
-		createUserWithEmailAndPassword(data.emailAddress, data.password);
-		let idToken = (await user?.getIdToken()) as string;
-		cookie.save('idToken', idToken, { path: '/' });
+		await auth
+			.createUserWithEmailAndPassword(data.emailAddress, data.password)
+			.then(async (userCredentials) => {
+				if (!userCredentials) return;
+				const user = userCredentials.user;
+				if (!user) return;
+				setUser(user);
+				let idToken = user.getIdToken();
+				await storeIdToken(idToken);
+				let newUserInDB = await newUser(
+					user.uid,
+					data.firstName,
+					data.lastName,
+					data.emailAddress
+				);
+			})
+			.catch((error: FirebaseAuthErrors) => {
+				setError(error);
+			});
 	};
-
-	const [user] = useAuthState(auth);
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
 
-	if (user || createdUser) return <Redirect to="/" />;
+	if (user) return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
@@ -169,9 +178,9 @@ const RegistrationForms: FC = () => {
 							)}
 						</div>
 						<div className="mt-8">
-							{createdUserError && (
+							{error && (
 								<span className="text-bold text-xs text-red-500">
-									{createdUserError.message}
+									{error.message}
 								</span>
 							)}
 							<button

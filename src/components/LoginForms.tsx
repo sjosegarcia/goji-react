@@ -1,37 +1,37 @@
-import React, { FC } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Login } from 'types/user.interface';
 import { auth, firebaseAuthProviders } from '../lib/firebase';
-import {
-	useAuthState,
-	useSignInWithEmailAndPassword,
-} from 'react-firebase-hooks/auth';
 import { Redirect } from 'react-router-dom';
-import cookie from 'react-cookies';
+import storeIdToken from 'lib/token/storeIdToken';
+import { User } from '@firebase/auth-types';
+import { FirebaseAuthErrors } from 'types/firebase.interface';
 
 const LoginForms: FC = () => {
 	const googleAuth = new firebaseAuthProviders.GoogleAuthProvider();
 	const appleAuth = new firebaseAuthProviders.OAuthProvider('apple.com');
 
-	const [
-		signInWithEmailAndPassword,
-		emailAndPassUser,
-		emailAndPassLoading,
-		emailAndPassError,
-	] = useSignInWithEmailAndPassword(auth);
+	const [user, setUser] = useState<User | undefined>();
+	const [authError, setAuthError] = useState<FirebaseAuthErrors | undefined>();
 
 	const signInWithGoogle = async () => {
-		let gAuth = auth.signInWithPopup(googleAuth);
-		let token = (await gAuth).user?.getIdToken();
+		const gAuth = auth.signInWithPopup(googleAuth);
+		const user = (await gAuth).user;
+		if (!user) return null;
+		const token = user.getIdToken();
+		setUser(user);
 		await storeIdToken(token);
 		return gAuth;
 	};
 
 	const signInWithApple = async () => {
-		let aAuth = auth.signInWithPopup(appleAuth);
-		let token = (await aAuth).user?.getIdToken();
+		const aAuth = auth.signInWithPopup(appleAuth);
+		const user = (await aAuth).user;
+		if (!user) return null;
+		const token = user.getIdToken();
+		setUser(user);
 		await storeIdToken(token);
 		return appleAuth;
 	};
@@ -53,24 +53,26 @@ const LoginForms: FC = () => {
 		resolver: yupResolver(schema),
 	});
 
-	const [user] = useAuthState(auth);
-
 	const onSubmit: SubmitHandler<Login> = async (data) => {
-		signInWithEmailAndPassword(data.emailAddress, data.password);
-		let idToken = user?.getIdToken();
-		storeIdToken(idToken);
-	};
-
-	const storeIdToken = async (idToken?: Promise<string>) => {
-		if (!idToken) return;
-		let token = await idToken;
-		cookie.save('idToken', token, { path: '/' });
+		auth
+			.signInWithEmailAndPassword(data.emailAddress, data.password)
+			.then(async (userCredentials) => {
+				if (!userCredentials) return;
+				const user = userCredentials.user;
+				if (!user) return;
+				setUser(user);
+				let idToken = user.getIdToken();
+				storeIdToken(idToken);
+			})
+			.catch((error: FirebaseAuthErrors) => {
+				setAuthError(error);
+			});
 	};
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
 
-	if (user || emailAndPassUser) return <Redirect to="/" />;
+	if (user) return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
@@ -178,14 +180,14 @@ const LoginForms: FC = () => {
 							)}
 						</div>
 						<div className="mt-8">
-							{emailAndPassError && (
+							{authError && (
 								<span className="text-bold text-xs text-red-500">
-									{emailAndPassError.message}
+									{authError.message}
 								</span>
 							)}
 							<button
 								onClick={handleSubmit(onSubmit)}
-								disabled={emailAndPassLoading}
+								//disabled={processingUserLogin}
 								className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300"
 							>
 								Login
