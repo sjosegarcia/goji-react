@@ -1,10 +1,8 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { Redirect } from 'react-router-dom';
 import { ForgotPassword } from 'types/user.interface';
 
 const ForgotPasswordForms: FC = () => {
@@ -14,6 +12,8 @@ const ForgotPasswordForms: FC = () => {
 			.email('Please provide a valid email address')
 			.required('Please provide a valid email address'),
 	});
+
+	const [emailSent, setEmailSent] = useState(false);
 
 	const {
 		register,
@@ -25,15 +25,13 @@ const ForgotPasswordForms: FC = () => {
 		},
 		resolver: yupResolver(schema),
 	});
-	const onSubmit: SubmitHandler<ForgotPassword> = (data) =>
+	const onSubmit: SubmitHandler<ForgotPassword> = (data) => {
 		auth.sendPasswordResetEmail(data.emailAddress);
-
-	const [user] = useAuthState(auth);
+		setEmailSent(true);
+	};
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
-
-	if (user) return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
@@ -63,6 +61,7 @@ const ForgotPasswordForms: FC = () => {
 						<div className="mt-8">
 							<button
 								onClick={handleSubmit(onSubmit)}
+								disabled={emailSent}
 								className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300"
 							>
 								Send Email

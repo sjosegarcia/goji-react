@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { UserVerify } from 'types/user.interface';
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
