@@ -15,6 +15,12 @@ const LoginForms: FC = () => {
 
 	const [user, setUser] = useState<User | undefined>();
 	const [authError, setAuthError] = useState<FirebaseAuthErrors | undefined>();
+	const [rememberMe, setRememberMe] = useState(false);
+
+	const rememberMeChecked = () => {
+		setRememberMe(!rememberMe);
+		auth.setPersistence(rememberMe ? 'session' : 'none');
+	};
 
 	const signInWithGoogle = async () => {
 		const gAuth = auth.signInWithPopup(googleAuth);
@@ -178,6 +184,16 @@ const LoginForms: FC = () => {
 									{errors.password.message}
 								</span>
 							)}
+						</div>
+						<div className="mt-4">
+							<span className="text-xl text-bold text-gray-500">
+								Remember Me{' '}
+							</span>
+							<input
+								type="checkbox"
+								className="form-checkbox h-5 w-5 text-yellow-300"
+								onClick={rememberMeChecked}
+							></input>
 						</div>
 						<div className="mt-8">
 							{authError && (
