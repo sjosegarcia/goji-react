@@ -2,6 +2,8 @@ import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../lib/firebase';
+import removeIdToken from 'lib/token/removeIdToken';
+import removeUser from 'lib/users/removeUser';
 
 type NavbarProps = {
 	toggle: () => void;
@@ -10,7 +12,11 @@ type NavbarProps = {
 const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 	const [user] = useAuthState(auth);
 
-	const signOut = () => auth.signOut();
+	const signOut = () => {
+		auth.signOut();
+		removeIdToken();
+		removeUser();
+	};
 
 	return (
 		<nav
@@ -18,7 +24,7 @@ const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 			role="navigation"
 		>
 			<Link to="/" className="pl-8">
-				GODZ
+				GOJI
 			</Link>
 			<div className="px-4 cursor-pointer md:hidden" onClick={props.toggle}>
 				<svg

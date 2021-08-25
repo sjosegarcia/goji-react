@@ -2,9 +2,9 @@ import { UserInDB } from 'types/user.interface';
 
 export default async function newUser(
 	uid: string,
-	firstName: string,
-	lastName: string,
-	emailAddress: string
+	firstname: string,
+	lastname: string,
+	email: string
 ): Promise<UserInDB> {
 	const res = await fetch(
 		`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/new`,
@@ -16,9 +16,9 @@ export default async function newUser(
 			},
 			body: JSON.stringify({
 				uid: uid,
-				firstname: firstName,
-				lastname: lastName,
-				email: emailAddress,
+				firstname: firstname,
+				lastname: lastname,
+				email: email,
 			}),
 		}
 	);

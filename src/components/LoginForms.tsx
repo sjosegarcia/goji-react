@@ -8,12 +8,14 @@ import { Redirect } from 'react-router-dom';
 import storeIdToken from 'lib/token/storeIdToken';
 import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
+import getAuthenticatedUser from 'lib/users/getAuthenticatedUser';
+import storeUser from 'lib/users/storeUser';
 
 const LoginForms: FC = () => {
 	const googleAuth = new firebaseAuthProviders.GoogleAuthProvider();
 	const appleAuth = new firebaseAuthProviders.OAuthProvider('apple.com');
 
-	const [user, setUser] = useState<User | undefined>();
+	const [firebaseUser, setFirebaseUser] = useState<User | undefined>();
 	const [authError, setAuthError] = useState<FirebaseAuthErrors | undefined>();
 	const [rememberMe, setRememberMe] = useState(false);
 
@@ -27,8 +29,10 @@ const LoginForms: FC = () => {
 		const user = (await gAuth).user;
 		if (!user) return null;
 		const token = user.getIdToken();
-		setUser(user);
+		setFirebaseUser(user);
 		await storeIdToken(token);
+		const userInDB = await getAuthenticatedUser();
+		storeUser(userInDB);
 		return gAuth;
 	};
 
@@ -37,13 +41,15 @@ const LoginForms: FC = () => {
 		const user = (await aAuth).user;
 		if (!user) return null;
 		const token = user.getIdToken();
-		setUser(user);
+		setFirebaseUser(user);
 		await storeIdToken(token);
+		const userInDB = await getAuthenticatedUser();
+		storeUser(userInDB);
 		return appleAuth;
 	};
 
 	const schema = yup.object().shape({
-		emailAddress: yup
+		email: yup
 			.string()
 			.email('Please provide a valid email address')
 			.required('Please provide a valid email address'),
@@ -55,20 +61,22 @@ const LoginForms: FC = () => {
 		handleSubmit,
 		formState: { errors },
 	} = useForm<Login>({
-		defaultValues: { emailAddress: '', password: '' },
+		defaultValues: { email: '', password: '' },
 		resolver: yupResolver(schema),
 	});
 
 	const onSubmit: SubmitHandler<Login> = async (data) => {
 		auth
-			.signInWithEmailAndPassword(data.emailAddress, data.password)
+			.signInWithEmailAndPassword(data.email, data.password)
 			.then(async (userCredentials) => {
 				if (!userCredentials) return;
 				const user = userCredentials.user;
 				if (!user) return;
-				setUser(user);
+				setFirebaseUser(user);
 				let idToken = user.getIdToken();
 				storeIdToken(idToken);
+				const userInDB = await getAuthenticatedUser();
+				storeUser(userInDB);
 			})
 			.catch((error: FirebaseAuthErrors) => {
 				setAuthError(error);
@@ -78,7 +86,7 @@ const LoginForms: FC = () => {
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
 
-	if (user) return <Redirect to="/" />;
+	if (firebaseUser) return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
@@ -92,7 +100,7 @@ const LoginForms: FC = () => {
 					></div>
 					<div className="w-full p-8 lg:w-1/2">
 						<h2 className="text-2xl font-semibold text-gray-700 text-center">
-							GODZ
+							GOJI
 						</h2>
 						<p className="text-xl text-gray-600 text-center">Welcome back!</p>
 						<div
@@ -151,15 +159,15 @@ const LoginForms: FC = () => {
 								Email Address
 							</label>
 							<input
-								{...register('emailAddress')}
+								{...register('email')}
 								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.emailAddress
+									errors.email
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
 							/>
-							{errors.emailAddress && (
+							{errors.email && (
 								<span className="text-bold text-xs text-red-500">
-									{errors.emailAddress.message}
+									{errors.email.message}
 								</span>
 							)}
 						</div>

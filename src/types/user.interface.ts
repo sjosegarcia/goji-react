@@ -1,26 +1,33 @@
 export interface UserVerify {
-	firstName: string;
-	lastName: string;
-	emailAddress: string;
+	firstname: string;
+	lastname: string;
+	email: string;
 	password: string;
 	passwordConfirmation: string;
 }
 
 export interface Login {
-	emailAddress: string;
+	email: string;
 	password: string;
 }
 
 export interface ForgotPassword {
-	emailAddress: string;
+	email: string;
+}
+
+export interface UserUpdate {
+	firstname: string;
+	lastname: string;
+	email: string;
+	username: string;
 }
 
 export interface User {
 	uid?: string;
 	username?: string;
-	emailAddress?: string;
-	firstName?: string;
-	lastName?: string;
+	email?: string;
+	firstname?: string;
+	lastname?: string;
 	dob?: string;
 	lastLoginDate?: Date;
 	createdOn?: Date;

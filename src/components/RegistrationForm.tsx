@@ -12,9 +12,9 @@ import { FirebaseAuthErrors } from 'types/firebase.interface';
 
 const RegistrationForms: FC = () => {
 	const schema = yup.object().shape({
-		firstName: yup.string().max(20).required('Please provide your first name'),
-		lastName: yup.string().required('Please provide your last name'),
-		emailAddress: yup
+		firstname: yup.string().max(20).required('Please provide your first name'),
+		lastname: yup.string().required('Please provide your last name'),
+		email: yup
 			.string()
 			.email('Please provide a valid email address')
 			.required('Please provide a valid email address'),
@@ -40,9 +40,9 @@ const RegistrationForms: FC = () => {
 		formState: { errors },
 	} = useForm<UserVerify>({
 		defaultValues: {
-			firstName: '',
-			lastName: '',
-			emailAddress: '',
+			firstname: '',
+			lastname: '',
+			email: '',
 			password: '',
 			passwordConfirmation: '',
 		},
@@ -51,7 +51,7 @@ const RegistrationForms: FC = () => {
 
 	const onSubmit: SubmitHandler<UserVerify> = async (data) => {
 		await auth
-			.createUserWithEmailAndPassword(data.emailAddress, data.password)
+			.createUserWithEmailAndPassword(data.email, data.password)
 			.then(async (userCredentials) => {
 				if (!userCredentials) return;
 				const user = userCredentials.user;
@@ -61,9 +61,9 @@ const RegistrationForms: FC = () => {
 				await storeIdToken(idToken);
 				let newUserInDB = await newUser(
 					user.uid,
-					data.firstName,
-					data.lastName,
-					data.emailAddress
+					data.firstname,
+					data.lastname,
+					data.email
 				);
 			})
 			.catch((error: FirebaseAuthErrors) => {
@@ -91,15 +91,15 @@ const RegistrationForms: FC = () => {
 								</label>
 							</div>
 							<input
-								{...register('firstName')}
+								{...register('firstname')}
 								className={`text-gray-700 focus:outline-none focus:shadow-outline border ${textBoxColor(
-									errors.firstName
+									errors.firstname
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="firstname"
 							/>
-							{errors.firstName && (
+							{errors.firstname && (
 								<span className="text-bold text-xs text-red-500">
-									{errors.firstName.message}
+									{errors.firstname.message}
 								</span>
 							)}
 						</div>
@@ -110,15 +110,15 @@ const RegistrationForms: FC = () => {
 								</label>
 							</div>
 							<input
-								{...register('lastName')}
+								{...register('lastname')}
 								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.lastName
+									errors.lastname
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="lastname"
 							/>
-							{errors.lastName && (
+							{errors.lastname && (
 								<span className="text-bold text-xs text-red-500">
-									{errors.lastName.message}
+									{errors.lastname.message}
 								</span>
 							)}
 						</div>
@@ -127,15 +127,15 @@ const RegistrationForms: FC = () => {
 								Email Address
 							</label>
 							<input
-								{...register('emailAddress')}
+								{...register('email')}
 								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.emailAddress
+									errors.email
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
 							/>
-							{errors.emailAddress && (
+							{errors.email && (
 								<span className="text-bold text-xs text-red-500">
-									{errors.emailAddress.message}
+									{errors.email.message}
 								</span>
 							)}
 						</div>

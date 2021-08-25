@@ -2,47 +2,52 @@ import React, { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { auth } from '../lib/firebase';
-import { User, UserInDB } from 'types/user.interface';
+import { UserInDB } from 'types/user.interface';
 import { Redirect } from 'react-router-dom';
-import getAuthenticatedUser from 'lib/users/getAuthenticatedUser';
+import cookie from 'react-cookies';
+import { UserUpdate } from 'types/user.interface';
+import updateUser from 'lib/users/updateUser';
 
 const ProfileForms: FC = () => {
-	const schema = yup.object().shape({
-		username: yup.string().required().max(12).min(3).label('Username'),
-		firstName: yup.string().max(20).required('Please provide your first name'),
-		lastName: yup.string().required('Please provide your last name'),
-		emailAddress: yup
-			.string()
-			.email('Please provide a valid email address')
-			.required('Please provide a valid email address'),
-	});
-
-	const [user, setUser] = useState<UserInDB | null>(null);
-
-	const queryUser = async () => {
-		const user = await getAuthenticatedUser();
-		console.log(user);
-		setUser(user);
-		return user;
-	};
+	const [userInDB, setUserInDB] = useState<UserInDB | undefined>();
 
 	useEffect(() => {
-		const user = queryUser();
+		const updateUser = () => {
+			const user = cookie.load('user') as UserInDB;
+			setUserInDB(user);
+		};
+		updateUser();
 	}, []);
 
-	//if (!user) return <Redirect to="/" />;
+	//if (!userInDB) return <Redirect to="/" />;
+
+	const onSubmit: SubmitHandler<UserInDB> = async (data) => {
+		const updateUserInfo = {
+			email: data.email ?? '',
+			firstname: data.firstname ?? '',
+			lastname: data.lastname ?? '',
+			username: data.username ?? '',
+		} as UserUpdate;
+		const updatedUser = await updateUser(updateUserInfo);
+	};
+
+	const schema = yup.object().shape({
+		username: yup.string().required().min(3).max(12),
+		firstname: yup.string().max(20),
+		lastname: yup.string(),
+		email: yup.string().email('Please provide a valid email address'),
+	});
 
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<User>({
+	} = useForm<UserInDB>({
 		defaultValues: {
 			username: '',
-			firstName: '',
-			lastName: '',
-			emailAddress: '',
+			firstname: '',
+			lastname: '',
+			email: '',
 		},
 		resolver: yupResolver(schema),
 	});
@@ -68,6 +73,7 @@ const ProfileForms: FC = () => {
 									errors.username
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="username"
+								value={userInDB?.username || ''}
 							/>
 						</div>
 						<div className="mt-4">
@@ -75,11 +81,12 @@ const ProfileForms: FC = () => {
 								Email Address
 							</label>
 							<input
-								{...register('emailAddress')}
+								{...register('email')}
 								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.emailAddress
+									errors.email
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
+								value={userInDB?.email || ''}
 							/>
 						</div>
 						<div className="mt-4">
@@ -87,11 +94,12 @@ const ProfileForms: FC = () => {
 								Firstname
 							</label>
 							<input
-								{...register('firstName')}
+								{...register('firstname')}
 								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.firstName
+									errors.firstname
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="firstname"
+								value={userInDB?.firstname || ''}
 							/>
 						</div>
 						<div className="mt-4">
@@ -99,12 +107,21 @@ const ProfileForms: FC = () => {
 								Lastname
 							</label>
 							<input
-								{...register('lastName')}
+								{...register('lastname')}
 								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.lastName
+									errors.lastname
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="lastname"
+								value={userInDB?.lastname || ''}
 							/>
+						</div>
+						<div className="mt-8">
+							<button
+								onClick={handleSubmit(onSubmit)}
+								className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300"
+							>
+								Update
+							</button>
 						</div>
 					</div>
 				</div>

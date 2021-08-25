@@ -7,7 +7,7 @@ import { ForgotPassword } from 'types/user.interface';
 
 const ForgotPasswordForms: FC = () => {
 	const schema = yup.object().shape({
-		emailAddress: yup
+		email: yup
 			.string()
 			.email('Please provide a valid email address')
 			.required('Please provide a valid email address'),
@@ -21,12 +21,12 @@ const ForgotPasswordForms: FC = () => {
 		formState: { errors },
 	} = useForm<ForgotPassword>({
 		defaultValues: {
-			emailAddress: '',
+			email: '',
 		},
 		resolver: yupResolver(schema),
 	});
 	const onSubmit: SubmitHandler<ForgotPassword> = (data) => {
-		auth.sendPasswordResetEmail(data.emailAddress);
+		auth.sendPasswordResetEmail(data.email);
 		setEmailSent(true);
 	};
 
@@ -46,15 +46,15 @@ const ForgotPasswordForms: FC = () => {
 								Email Address
 							</label>
 							<input
-								{...register('emailAddress')}
+								{...register('email')}
 								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.emailAddress
+									errors.email
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
 							/>
-							{errors.emailAddress && (
+							{errors.email && (
 								<span className="text-bold text-xs text-red-500">
-									{errors.emailAddress.message}
+									{errors.email.message}
 								</span>
 							)}
 						</div>
