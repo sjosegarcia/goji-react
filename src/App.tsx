@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import Dropdown from './components/DropDown';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import Course from './pages/Course';
 import ForgotPassword from 'pages/ForgotPassword';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './lib/firebase';
@@ -65,6 +66,7 @@ function App() {
 				<Route path="/docs" />
 				<Route path="/social" />
 				<Route path="/profile" component={Profile} />
+				<Route path="/course" component={Course} />
 				<Route path="/login" component={Login} />
 				<Route path="/signup" component={Signup} />
 				<Route path="/forgot-password" component={ForgotPassword} />

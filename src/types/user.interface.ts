@@ -16,10 +16,10 @@ export interface ForgotPassword {
 }
 
 export interface UserUpdate {
-	firstname: string;
-	lastname: string;
-	email: string;
-	username: string;
+	firstname?: string;
+	lastname?: string;
+	email?: string;
+	username?: string;
 }
 
 export interface User {

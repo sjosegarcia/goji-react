@@ -9,7 +9,9 @@ import { UserUpdate } from 'types/user.interface';
 import updateUser from 'lib/users/updateUser';
 
 const ProfileForms: FC = () => {
-	const [userInDB, setUserInDB] = useState<UserInDB | undefined>();
+	const [userInDB, setUserInDB] = useState<UserInDB | undefined>(
+		cookie.load('user')
+	);
 
 	useEffect(() => {
 		const updateUser = () => {
@@ -19,7 +21,7 @@ const ProfileForms: FC = () => {
 		updateUser();
 	}, []);
 
-	//if (!userInDB) return <Redirect to="/" />;
+	if (!userInDB) return <Redirect to="/" />;
 
 	const onSubmit: SubmitHandler<UserInDB> = async (data) => {
 		const updateUserInfo = {
@@ -44,10 +46,10 @@ const ProfileForms: FC = () => {
 		formState: { errors },
 	} = useForm<UserInDB>({
 		defaultValues: {
-			username: '',
-			firstname: '',
-			lastname: '',
-			email: '',
+			username: userInDB?.username,
+			firstname: userInDB?.firstname,
+			lastname: userInDB?.lastname,
+			email: userInDB?.email,
 		},
 		resolver: yupResolver(schema),
 	});
@@ -73,7 +75,7 @@ const ProfileForms: FC = () => {
 									errors.username
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="username"
-								value={userInDB?.username || ''}
+								value={userInDB?.username}
 							/>
 						</div>
 						<div className="mt-4">
@@ -86,7 +88,7 @@ const ProfileForms: FC = () => {
 									errors.email
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
-								value={userInDB?.email || ''}
+								value={userInDB?.email}
 							/>
 						</div>
 						<div className="mt-4">
@@ -99,7 +101,7 @@ const ProfileForms: FC = () => {
 									errors.firstname
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="firstname"
-								value={userInDB?.firstname || ''}
+								value={userInDB?.firstname}
 							/>
 						</div>
 						<div className="mt-4">
@@ -112,7 +114,7 @@ const ProfileForms: FC = () => {
 									errors.lastname
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="lastname"
-								value={userInDB?.lastname || ''}
+								value={userInDB?.lastname}
 							/>
 						</div>
 						<div className="mt-8">
