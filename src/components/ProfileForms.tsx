@@ -10,7 +10,7 @@ import updateUser from 'lib/users/updateUser';
 
 const ProfileForms: FC = () => {
 	const [userInDB, setUserInDB] = useState<UserInDB | undefined>(
-		cookie.load('user')
+		cookie.load('user') as UserInDB
 	);
 
 	useEffect(() => {
