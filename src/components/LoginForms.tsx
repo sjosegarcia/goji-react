@@ -2,14 +2,16 @@ import React, { FC, useState } from 'react';
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Login } from 'types/user.interface';
+import { Login, UserInDB } from 'types/user.interface';
 import { auth, firebaseAuthProviders } from '../lib/firebase';
 import { Redirect } from 'react-router-dom';
 import storeIdToken from 'lib/token/storeIdToken';
 import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
 import getAuthenticatedUser from 'lib/users/getAuthenticatedUser';
+import getUserByUid from 'lib/users/getUserByUId';
 import storeUser from 'lib/users/storeUser';
+import newUser from 'lib/users/newUsers';
 
 const LoginForms: FC = () => {
 	const googleAuth = new firebaseAuthProviders.GoogleAuthProvider();
@@ -24,15 +26,40 @@ const LoginForms: FC = () => {
 		auth.setPersistence(rememberMe ? 'session' : 'none');
 	};
 
-	const signInWithGoogle = async () => {
-		const gAuth = auth.signInWithPopup(googleAuth);
-		const user = (await gAuth).user;
-		if (!user) return null;
+	const retreiveUserByUid = async (uid: string) => {
+		if (!uid) return null;
+		const userInDB = await getUserByUid(uid);
+		return userInDB;
+	};
+
+	const createNewUserInDB = async (firebaseUser: User) => {
+		if (!firebaseUser) return null;
+		const newDBUser = await newUser(
+			firebaseUser.uid,
+			undefined,
+			undefined,
+			firebaseUser.email ?? undefined,
+			firebaseUser.photoURL ?? undefined
+		);
+		return newDBUser;
+	};
+
+	const processUser = async (userInDB: UserInDB | null, user: User) => {
+		if (!userInDB) await createNewUserInDB(user);
 		const token = user.getIdToken();
 		setFirebaseUser(user);
 		await storeIdToken(token);
-		const userInDB = await getAuthenticatedUser();
-		storeUser(userInDB);
+		const authenticatedUser = await getAuthenticatedUser();
+		storeUser(authenticatedUser);
+	};
+
+	const signInWithGoogle = async () => {
+		googleAuth.addScope('profile');
+		const gAuth = auth.signInWithPopup(googleAuth);
+		const user = (await gAuth).user;
+		if (!user) return null;
+		const userInDB = await retreiveUserByUid(user.uid);
+		processUser(userInDB, user);
 		return gAuth;
 	};
 
@@ -40,11 +67,8 @@ const LoginForms: FC = () => {
 		const aAuth = auth.signInWithPopup(appleAuth);
 		const user = (await aAuth).user;
 		if (!user) return null;
-		const token = user.getIdToken();
-		setFirebaseUser(user);
-		await storeIdToken(token);
-		const userInDB = await getAuthenticatedUser();
-		storeUser(userInDB);
+		const userInDB = await retreiveUserByUid(user.uid);
+		processUser(userInDB, user);
 		return appleAuth;
 	};
 

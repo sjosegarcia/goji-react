@@ -65,7 +65,6 @@ const RegistrationForms: FC = () => {
 					data.lastname,
 					data.email
 				);
-				console.log(newUserInDB);
 			})
 			.catch((error: FirebaseAuthErrors) => {
 				setError(error);
