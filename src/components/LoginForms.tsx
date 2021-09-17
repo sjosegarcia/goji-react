@@ -9,9 +9,9 @@ import storeIdToken from 'lib/token/storeIdToken';
 import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
 import getAuthenticatedUser from 'lib/users/getAuthenticatedUser';
-import getUserByUid from 'lib/users/getUserByUId';
 import storeUser from 'lib/users/storeUser';
 import newUser from 'lib/users/newUsers';
+import getUserByUid from 'lib/users/getUserByUid';
 
 const LoginForms: FC = () => {
 	const googleAuth = new firebaseAuthProviders.GoogleAuthProvider();
@@ -46,10 +46,11 @@ const LoginForms: FC = () => {
 
 	const processUser = async (userInDB: UserInDB | null, user: User) => {
 		if (!userInDB) await createNewUserInDB(user);
-		const token = user.getIdToken();
+		const token = user.getIdToken(true);
 		setFirebaseUser(user);
 		await storeIdToken(token);
 		const authenticatedUser = await getAuthenticatedUser();
+		console.log(authenticatedUser);
 		storeUser(authenticatedUser);
 	};
 
@@ -59,7 +60,7 @@ const LoginForms: FC = () => {
 		const user = (await gAuth).user;
 		if (!user) return null;
 		const userInDB = await retreiveUserByUid(user.uid);
-		processUser(userInDB, user);
+		await processUser(userInDB, user);
 		return gAuth;
 	};
 

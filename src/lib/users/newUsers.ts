@@ -8,7 +8,7 @@ export default async function newUser(
 	photoURL?: string
 ): Promise<UserInDB> {
 	const res = await fetch(
-		`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/new`,
+		`${process.env.REACT_APP_FULL_BACKEND_URL}/user/new`,
 		{
 			method: 'PUT',
 			headers: {
@@ -20,7 +20,7 @@ export default async function newUser(
 				firstname: firstname ?? null,
 				lastname: lastname ?? null,
 				email: email ?? null,
-				photoUrl: photoURL ?? null,
+				photo_url: photoURL ?? null,
 			}),
 		}
 	);
