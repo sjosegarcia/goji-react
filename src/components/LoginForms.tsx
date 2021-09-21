@@ -50,7 +50,6 @@ const LoginForms: FC = () => {
 		setFirebaseUser(user);
 		await storeIdToken(token);
 		const authenticatedUser = await getAuthenticatedUser();
-		console.log(authenticatedUser);
 		storeUser(authenticatedUser);
 	};
 
