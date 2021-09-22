@@ -13,6 +13,8 @@ const ProfileForms: FC = () => {
 		cookie.load('user') as UserInDB
 	);
 
+	if (!userInDB) return <Redirect to="/" />;
+
 	useEffect(() => {
 		const updateUser = () => {
 			const user = cookie.load('user') as UserInDB;
@@ -20,8 +22,6 @@ const ProfileForms: FC = () => {
 		};
 		updateUser();
 	}, []);
-
-	if (!userInDB) return <Redirect to="/" />;
 
 	const onSubmit: SubmitHandler<UserInDB> = async (data) => {
 		const updateUserInfo = {
@@ -31,6 +31,8 @@ const ProfileForms: FC = () => {
 			username: data.username ?? '',
 		} as UserUpdate;
 		const updatedUser = await updateUser(updateUserInfo);
+		setUserInDB(updatedUser);
+		cookie.save('user', updatedUser, { path: '/' });
 	};
 
 	const schema = yup.object().shape({
@@ -46,13 +48,59 @@ const ProfileForms: FC = () => {
 		formState: { errors },
 	} = useForm<UserInDB>({
 		defaultValues: {
-			username: userInDB?.username,
-			firstname: userInDB?.firstname,
-			lastname: userInDB?.lastname,
-			email: userInDB?.email,
+			username: userInDB?.username ?? '',
+			firstname: userInDB?.firstname ?? '',
+			lastname: userInDB?.lastname ?? '',
+			email: userInDB?.email ?? '',
 		},
 		resolver: yupResolver(schema),
 	});
+
+	const onChangeUsernameHandler = (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		setUserInDB({
+			id: userInDB?.id,
+			username: event.target.value,
+			firstname: userInDB.firstname,
+			lastname: userInDB.lastname,
+			email: userInDB.email,
+		} as UserInDB);
+	};
+
+	const onChangeEmailHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setUserInDB({
+			id: userInDB?.id,
+			username: userInDB.username,
+			firstname: userInDB.firstname,
+			lastname: userInDB.lastname,
+			email: event.target.value,
+		} as UserInDB);
+	};
+
+	const onChangeFirstnameHandler = (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		setUserInDB({
+			id: userInDB?.id,
+			username: userInDB.username,
+			firstname: event.target.value,
+			lastname: userInDB.lastname,
+			email: userInDB.email,
+		} as UserInDB);
+	};
+
+	const onChangeLastnameHandler = (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		setUserInDB({
+			id: userInDB?.id,
+			username: userInDB.username,
+			firstname: userInDB.firstname,
+			lastname: event.target.value,
+			email: userInDB.email,
+		} as UserInDB);
+	};
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
@@ -76,6 +124,7 @@ const ProfileForms: FC = () => {
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="username"
 								value={userInDB?.username ?? ''}
+								onChange={onChangeUsernameHandler}
 							/>
 						</div>
 						<div className="mt-4">
@@ -89,6 +138,7 @@ const ProfileForms: FC = () => {
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
 								value={userInDB?.email ?? ''}
+								onChange={onChangeEmailHandler}
 							/>
 						</div>
 						<div className="mt-4">
@@ -102,6 +152,7 @@ const ProfileForms: FC = () => {
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="firstname"
 								value={userInDB?.firstname ?? ''}
+								onChange={onChangeFirstnameHandler}
 							/>
 						</div>
 						<div className="mt-4">
@@ -115,6 +166,7 @@ const ProfileForms: FC = () => {
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="lastname"
 								value={userInDB?.lastname ?? ''}
+								onChange={onChangeLastnameHandler}
 							/>
 						</div>
 						<div className="mt-8">
