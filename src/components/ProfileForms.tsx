@@ -75,7 +75,7 @@ const ProfileForms: FC = () => {
 									errors.username
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="username"
-								value={userInDB?.username}
+								value={userInDB?.username ?? ''}
 							/>
 						</div>
 						<div className="mt-4">
@@ -88,7 +88,7 @@ const ProfileForms: FC = () => {
 									errors.email
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="email"
-								value={userInDB?.email}
+								value={userInDB?.email ?? ''}
 							/>
 						</div>
 						<div className="mt-4">
@@ -101,7 +101,7 @@ const ProfileForms: FC = () => {
 									errors.firstname
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="firstname"
-								value={userInDB?.firstname}
+								value={userInDB?.firstname ?? ''}
 							/>
 						</div>
 						<div className="mt-4">
@@ -114,7 +114,7 @@ const ProfileForms: FC = () => {
 									errors.lastname
 								)} rounded py-2 px-4 block w-full appearance-none`}
 								type="lastname"
-								value={userInDB?.lastname}
+								value={userInDB?.lastname ?? ''}
 							/>
 						</div>
 						<div className="mt-8">
