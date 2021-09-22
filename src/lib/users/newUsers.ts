@@ -24,5 +24,7 @@ export default async function newUser(
 			}),
 		}
 	);
+	console.log(res.headers);
+	console.log(res.json());
 	return res.json();
 }
