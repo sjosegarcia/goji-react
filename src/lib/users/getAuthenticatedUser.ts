@@ -11,5 +11,6 @@ export default async function getAuthenticatedUser(): Promise<UserInDB> {
 			'Access-Control-Allow-Origin': '*',
 		},
 	});
+	console.log(res.body);
 	return res.json();
 }

@@ -7,6 +7,7 @@ export default async function deleteCurrentUser(): Promise<UserInDB> {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*',
 			},
 		}
 	);

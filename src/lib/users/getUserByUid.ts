@@ -14,5 +14,6 @@ export default async function getUserByUid(
 		}
 	);
 	if (res.status == 400) return null;
+	console.log(res.body);
 	return res.json();
 }
