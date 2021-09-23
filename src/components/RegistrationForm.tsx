@@ -9,6 +9,7 @@ import newUser from 'lib/users/newUsers';
 import storeIdToken from 'lib/token/storeIdToken';
 import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
+import storeUser from 'lib/users/storeUser';
 
 const RegistrationForms: FC = () => {
 	const schema = yup.object().shape({
@@ -65,6 +66,7 @@ const RegistrationForms: FC = () => {
 					data.lastname,
 					data.email
 				);
+				storeUser(newUserInDB);
 			})
 			.catch((error: FirebaseAuthErrors) => {
 				setError(error);
