@@ -4,6 +4,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../lib/firebase';
 import removeIdToken from 'lib/token/removeIdToken';
 import removeUser from 'lib/users/removeUser';
+import signOut from 'lib/token/signOut';
 
 type NavbarProps = {
 	toggle: () => void;
@@ -11,12 +12,6 @@ type NavbarProps = {
 
 const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 	const [user] = useAuthState(auth);
-
-	const signOut = () => {
-		auth.signOut();
-		removeIdToken();
-		removeUser();
-	};
 
 	return (
 		<nav

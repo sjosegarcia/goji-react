@@ -16,8 +16,6 @@ import { auth } from './lib/firebase';
 function App() {
 	const [isOpen, setIsOpen] = useState(false);
 
-	const [user] = useAuthState(auth);
-
 	const toggle = () => {
 		setIsOpen(!isOpen);
 	};
@@ -36,7 +34,8 @@ function App() {
 		};
 	});
 
-	const authRoute = (children: React.ReactNode, { ...rest }) => {
+	const AuthRoute = (children: any, { ...rest }) => {
+		let [user] = useAuthState(auth);
 		return (
 			<Route
 				{...rest}
@@ -65,8 +64,8 @@ function App() {
 				<Route path="/about" />
 				<Route path="/docs" />
 				<Route path="/social" />
-				<Route path="/profile" component={Profile} />
-				<Route path="/course" component={Course} />
+				<AuthRoute path="/profile" component={Profile} />
+				<AuthRoute path="/course" component={Course} />
 				<Route path="/login" component={Login} />
 				<Route path="/signup" component={Signup} />
 				<Route path="/forgot-password" component={ForgotPassword} />

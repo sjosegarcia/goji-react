@@ -21,7 +21,7 @@ const ProfileForms: FC = () => {
 		updateUser();
 	}, []);
 
-	if (!userInDB) return <Redirect to="/" />;
+	//if (!userInDB) return <Redirect to="/" />;
 
 	const onSubmit: SubmitHandler<UserInDB> = async (data) => {
 		const updateUserInfo = {
@@ -62,18 +62,18 @@ const ProfileForms: FC = () => {
 		setUserInDB({
 			id: userInDB?.id,
 			username: event.target.value,
-			firstname: userInDB.firstname,
-			lastname: userInDB.lastname,
-			email: userInDB.email,
+			firstname: userInDB?.firstname,
+			lastname: userInDB?.lastname,
+			email: userInDB?.email,
 		} as UserInDB);
 	};
 
 	const onChangeEmailHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUserInDB({
 			id: userInDB?.id,
-			username: userInDB.username,
-			firstname: userInDB.firstname,
-			lastname: userInDB.lastname,
+			username: userInDB?.username,
+			firstname: userInDB?.firstname,
+			lastname: userInDB?.lastname,
 			email: event.target.value,
 		} as UserInDB);
 	};
@@ -83,10 +83,10 @@ const ProfileForms: FC = () => {
 	) => {
 		setUserInDB({
 			id: userInDB?.id,
-			username: userInDB.username,
+			username: userInDB?.username,
 			firstname: event.target.value,
-			lastname: userInDB.lastname,
-			email: userInDB.email,
+			lastname: userInDB?.lastname,
+			email: userInDB?.email,
 		} as UserInDB);
 	};
 
@@ -95,10 +95,10 @@ const ProfileForms: FC = () => {
 	) => {
 		setUserInDB({
 			id: userInDB?.id,
-			username: userInDB.username,
-			firstname: userInDB.firstname,
+			username: userInDB?.username,
+			firstname: userInDB?.firstname,
 			lastname: event.target.value,
-			email: userInDB.email,
+			email: userInDB?.email,
 		} as UserInDB);
 	};
 

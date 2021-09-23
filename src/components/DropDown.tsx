@@ -2,8 +2,7 @@ import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { auth } from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import removeIdToken from 'lib/token/removeIdToken';
-import removeUser from 'lib/users/removeUser';
+import signOut from 'lib/token/signOut';
 
 type DropDownProps = {
 	isOpen: boolean;
@@ -12,12 +11,6 @@ type DropDownProps = {
 
 const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 	const [user] = useAuthState(auth);
-
-	const signOut = () => {
-		auth.signOut();
-		removeIdToken();
-		removeUser();
-	};
 
 	return (
 		<div
