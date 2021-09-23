@@ -13,8 +13,6 @@ const ProfileForms: FC = () => {
 		cookie.load('user') as UserInDB
 	);
 
-	if (!userInDB) return <Redirect to="/" />;
-
 	useEffect(() => {
 		const updateUser = () => {
 			const user = cookie.load('user') as UserInDB;
@@ -22,6 +20,8 @@ const ProfileForms: FC = () => {
 		};
 		updateUser();
 	}, []);
+
+	if (!userInDB) return <Redirect to="/" />;
 
 	const onSubmit: SubmitHandler<UserInDB> = async (data) => {
 		const updateUserInfo = {
