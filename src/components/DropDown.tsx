@@ -38,6 +38,11 @@ const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 					Profile
 				</Link>
 			)}
+			{user && (
+				<Link to="/course" className="p-4">
+					Courses
+				</Link>
+			)}
 			{!user && (
 				<Link to="/login" className="p-4">
 					Login

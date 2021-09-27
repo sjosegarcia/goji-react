@@ -1,5 +1,4 @@
 export type Session = {
-	isAuthenticated?: boolean;
 	redirectPath: string;
 };
 

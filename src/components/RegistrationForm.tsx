@@ -39,7 +39,7 @@ const RegistrationForms: FC = () => {
 	const history = useHistory();
 
 	const handleLogin = () => {
-		setSession({ ...session, isAuthenticated: true });
+		setSession({ ...session });
 		history.push(session.redirectPath);
 	};
 
