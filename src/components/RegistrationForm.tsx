@@ -4,12 +4,13 @@ import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import newUser from 'lib/users/newUsers';
 import storeIdToken from 'lib/token/storeIdToken';
 import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
 import storeUser from 'lib/users/storeUser';
+import { useSessionContext } from 'contexts/SessionContext';
 
 const RegistrationForms: FC = () => {
 	const schema = yup.object().shape({
@@ -34,6 +35,13 @@ const RegistrationForms: FC = () => {
 
 	const [user, setUser] = useState<User | undefined>();
 	const [error, setError] = useState<FirebaseAuthErrors | undefined>();
+	const [session, setSession] = useSessionContext();
+	const history = useHistory();
+
+	const handleLogin = () => {
+		setSession({ ...session, isAuthenticated: true });
+		history.push(session.redirectPath);
+	};
 
 	const {
 		register,
@@ -67,6 +75,7 @@ const RegistrationForms: FC = () => {
 					data.email
 				);
 				storeUser(newUserInDB);
+				handleLogin();
 			})
 			.catch((error: FirebaseAuthErrors) => {
 				setError(error);
@@ -75,8 +84,6 @@ const RegistrationForms: FC = () => {
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
-
-	if (user) return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">

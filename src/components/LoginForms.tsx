@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Login, UserInDB } from 'types/user.interface';
 import { auth, firebaseAuthProviders } from '../lib/firebase';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import storeIdToken from 'lib/token/storeIdToken';
 import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
@@ -12,6 +12,7 @@ import getAuthenticatedUser from 'lib/users/getAuthenticatedUser';
 import storeUser from 'lib/users/storeUser';
 import newUser from 'lib/users/newUsers';
 import getUserByUid from 'lib/users/getUserByUid';
+import { useSessionContext } from 'contexts/SessionContext';
 
 const LoginForms: FC = () => {
 	const googleAuth = new firebaseAuthProviders.GoogleAuthProvider();
@@ -20,6 +21,14 @@ const LoginForms: FC = () => {
 	const [firebaseUser, setFirebaseUser] = useState<User | undefined>();
 	const [authError, setAuthError] = useState<FirebaseAuthErrors | undefined>();
 	const [rememberMe, setRememberMe] = useState(false);
+
+	const [session, setSession] = useSessionContext();
+	const history = useHistory();
+
+	const handleLogin = () => {
+		setSession({ ...session, isAuthenticated: true });
+		history.push(session.redirectPath);
+	};
 
 	const rememberMeChecked = () => {
 		setRememberMe(!rememberMe);
@@ -60,6 +69,7 @@ const LoginForms: FC = () => {
 		if (!user) return null;
 		const userInDB = await retreiveUserByUid(user.uid);
 		await processUser(userInDB, user);
+		handleLogin();
 		return gAuth;
 	};
 
@@ -68,7 +78,8 @@ const LoginForms: FC = () => {
 		const user = (await aAuth).user;
 		if (!user) return null;
 		const userInDB = await retreiveUserByUid(user.uid);
-		processUser(userInDB, user);
+		await processUser(userInDB, user);
+		handleLogin();
 		return appleAuth;
 	};
 
@@ -101,6 +112,7 @@ const LoginForms: FC = () => {
 				storeIdToken(idToken);
 				const userInDB = await getAuthenticatedUser();
 				storeUser(userInDB);
+				handleLogin();
 			})
 			.catch((error: FirebaseAuthErrors) => {
 				setAuthError(error);
@@ -109,8 +121,6 @@ const LoginForms: FC = () => {
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
-
-	if (firebaseUser) return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">

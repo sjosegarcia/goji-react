@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import './App.css';
 import Signup from 'pages/Signup';
@@ -12,9 +12,12 @@ import Course from './pages/Course';
 import ForgotPassword from 'pages/ForgotPassword';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './lib/firebase';
+import ProtectedRoute, { ProtectedRouteProps } from 'components/ProtectedRoute';
+import { useSessionContext } from 'contexts/SessionContext';
 
 function App() {
 	const [isOpen, setIsOpen] = useState(false);
+	const [sessionContext, updateSessionContext] = useSessionContext();
 
 	const toggle = () => {
 		setIsOpen(!isOpen);
@@ -34,25 +37,20 @@ function App() {
 		};
 	});
 
-	const AuthRoute = (children: any, { ...rest }) => {
+	const setRedirectPath = (path: string) => {
+		updateSessionContext({ ...sessionContext, redirectPath: path });
+	};
+
+	const isAuthenticated = () => {
 		let [user] = useAuthState(auth);
-		return (
-			<Route
-				{...rest}
-				render={({ location }) =>
-					user ? (
-						children
-					) : (
-						<Redirect
-							to={{
-								pathname: '/login',
-								state: { from: location },
-							}}
-						/>
-					)
-				}
-			/>
-		);
+		return user !== null;
+	};
+
+	const defaultProtectedRouteProps: ProtectedRouteProps = {
+		isAuthenticated: !!isAuthenticated(),
+		authenticationPath: '/login',
+		redirectPath: sessionContext.redirectPath,
+		setRedirectPath: setRedirectPath,
 	};
 
 	return (
@@ -64,8 +62,16 @@ function App() {
 				<Route path="/about" />
 				<Route path="/docs" />
 				<Route path="/social" />
-				<AuthRoute path="/profile" component={Profile} />
-				<AuthRoute path="/course" component={Course} />
+				<ProtectedRoute
+					{...defaultProtectedRouteProps}
+					path="/profile"
+					component={Profile}
+				/>
+				<ProtectedRoute
+					{...defaultProtectedRouteProps}
+					path="/course"
+					component={Course}
+				/>
 				<Route path="/login" component={Login} />
 				<Route path="/signup" component={Signup} />
 				<Route path="/forgot-password" component={ForgotPassword} />

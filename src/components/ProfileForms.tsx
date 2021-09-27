@@ -3,7 +3,6 @@ import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { UserInDB } from 'types/user.interface';
-import { Redirect } from 'react-router-dom';
 import cookie from 'react-cookies';
 import { UserUpdate } from 'types/user.interface';
 import updateUser from 'lib/users/updateUser';
@@ -20,8 +19,6 @@ const ProfileForms: FC = () => {
 		};
 		updateUser();
 	}, []);
-
-	//if (!userInDB) return <Redirect to="/" />;
 
 	const onSubmit: SubmitHandler<UserInDB> = async (data) => {
 		const updateUserInfo = {
