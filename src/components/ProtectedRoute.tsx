@@ -1,39 +1,37 @@
 import React, { useEffect } from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from 'lib/firebase';
 
 export type ProtectedRouteProps = {
-	isAuthenticated: boolean;
 	authenticationPath: string;
 	redirectPath: string;
 	setRedirectPath: (path: string) => void;
 } & RouteProps;
 
 export default function ProtectedRoute({
-	isAuthenticated,
 	authenticationPath,
 	redirectPath,
 	setRedirectPath,
 	...routeProps
 }: ProtectedRouteProps) {
 	const currentLocation = useLocation();
+	const [user, loading] = useAuthState(auth);
 
 	useEffect(() => {
-		console.log(isAuthenticated);
-		console.log(authenticationPath);
-		console.log(redirectPath);
-		console.log(routeProps);
-		console.log(currentLocation.pathname);
-		if (!isAuthenticated) {
-			setRedirectPath(currentLocation.pathname);
-		}
-	}, [isAuthenticated, setRedirectPath, currentLocation]);
+		if (!user) setRedirectPath(currentLocation.pathname);
+		if (user && redirectPath !== '') setRedirectPath('');
+	}, [user]);
 
-	if (isAuthenticated && redirectPath !== currentLocation.pathname) {
+	if (loading) return null;
+	if (user) {
 		return <Route {...routeProps} />;
 	} else {
 		return (
 			<Redirect
-				to={{ pathname: isAuthenticated ? redirectPath : authenticationPath }}
+				to={{
+					pathname: user ? redirectPath : authenticationPath,
+				}}
 			/>
 		);
 	}

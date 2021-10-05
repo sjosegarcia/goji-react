@@ -55,14 +55,14 @@ const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 						Profile
 					</Link>
 				)}
-				{user && (
-					<Link to="/course" className="p-4">
-						Courses
-					</Link>
-				)}
 				{!user && (
 					<Link to="/login" className="p-4">
 						Login
+					</Link>
+				)}
+				{user && (
+					<Link to="/course" className="p-4">
+						Courses
 					</Link>
 				)}
 				{user && (

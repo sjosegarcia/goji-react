@@ -10,8 +10,6 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Course from './pages/Course';
 import ForgotPassword from 'pages/ForgotPassword';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from './lib/firebase';
 import ProtectedRoute, { ProtectedRouteProps } from 'components/ProtectedRoute';
 import { useSessionContext } from 'contexts/SessionContext';
 
@@ -41,13 +39,7 @@ function App() {
 		updateSessionContext({ ...sessionContext, redirectPath: path });
 	};
 
-	const isAuthenticated = () => {
-		let [user] = useAuthState(auth);
-		return user !== null;
-	};
-
 	const defaultProtectedRouteProps: ProtectedRouteProps = {
-		isAuthenticated: !!isAuthenticated(),
 		authenticationPath: '/login',
 		redirectPath: sessionContext.redirectPath,
 		setRedirectPath: setRedirectPath,

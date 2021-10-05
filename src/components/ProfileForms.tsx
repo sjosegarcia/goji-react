@@ -6,6 +6,7 @@ import { UserInDB } from 'types/user.interface';
 import cookie from 'react-cookies';
 import { UserUpdate } from 'types/user.interface';
 import updateUser from 'lib/users/updateUser';
+import { auth } from 'lib/firebase';
 
 const ProfileForms: FC = () => {
 	const [userInDB, setUserInDB] = useState<UserInDB | undefined>(
@@ -103,81 +104,76 @@ const ProfileForms: FC = () => {
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
 
 	return (
-		<div className="bg-white h-screen flex flex-col justify-center">
-			<div className="py-6">
-				<div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
-					<div className="w-full p-8 lg:w">
-						<h2 className="text-2xl font-semibold text-gray-700 text-center">
-							Edit Profile
-						</h2>
-						<div className="mt-4">
-							<label className="block text-gray-700 text-sm font-bold mb-2">
-								Username
-							</label>
-							<input
-								{...register('username')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.username
-								)} rounded py-2 px-4 block w-full appearance-none`}
-								type="username"
-								value={userInDB?.username ?? ''}
-								onChange={onChangeUsernameHandler}
-							/>
+		<>
+			<div className="font-body text-base18 bg-darkcyan relative block overflow-hidden">
+				<div className="min-h-screen flex flex-col justify-center items-center relative">
+					<div className="mx-7 h-96 bg-white rounded-2xl relative block overflow-hidden w-80 z-30">
+						<div className="absolute inset-x-0 top-0">
+							<img src="/assets/images/bg-pattern-card.svg" alt="pattern" />
+							<div className="relative block">
+								<div className="absolute -top-10  left-1/2 -ml-12">
+									{auth.currentUser?.photoURL && (
+										<img
+											src={auth.currentUser?.photoURL ?? ''}
+											className="rounded-full w-10/11 border-4 border-white"
+										/>
+									)}
+								</div>
+							</div>
 						</div>
-						<div className="mt-4">
-							<label className="block text-gray-700 text-sm font-bold mb-2">
-								Email Address
-							</label>
-							<input
-								{...register('email')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.email
-								)} rounded py-2 px-4 block w-full appearance-none`}
-								type="email"
-								value={userInDB?.email ?? ''}
-								onChange={onChangeEmailHandler}
-							/>
-						</div>
-						<div className="mt-4">
-							<label className="block text-gray-700 text-sm font-bold mb-2">
-								Firstname
-							</label>
-							<input
-								{...register('firstname')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.firstname
-								)} rounded py-2 px-4 block w-full appearance-none`}
-								type="firstname"
-								value={userInDB?.firstname ?? ''}
-								onChange={onChangeFirstnameHandler}
-							/>
-						</div>
-						<div className="mt-4">
-							<label className="block text-gray-700 text-sm font-bold mb-2">
-								Lastname
-							</label>
-							<input
-								{...register('lastname')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.lastname
-								)} rounded py-2 px-4 block w-full appearance-none`}
-								type="lastname"
-								value={userInDB?.lastname ?? ''}
-								onChange={onChangeLastnameHandler}
-							/>
-						</div>
-						<div className="mt-8">
-							<button
-								onClick={handleSubmit(onSubmit)}
-								className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300"
-							>
-								Update
-							</button>
+						<div className="mt-56 flex flex-col justify-center items-center relative">
+							<div className="flex flex-col justify-around">
+								<div className="flex flex-row justify-around">
+									<div className="text-darkDesaturatedBlue font-bold">
+										{auth.currentUser?.displayName ?? ''}
+									</div>
+									<div className="text-darkGray ml-2">26</div>
+								</div>
+								<div className="text-darkGray  text-sm text-center mt-3">
+									{userInDB?.username ?? ''}
+								</div>
+							</div>
+							<hr className="mt-4 w-full text-darkGrayishBlue" />
+
+							<div className="mt-4 flex flex-row justify-between items-center h-14">
+								<div className="flex flex-col w-20">
+									<div className="text-darkDesaturatedBlue font-bold text-center">
+										<input
+											{...register('username')}
+											className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
+												errors.username
+											)} rounded py-2 px-4 block w-full appearance-none`}
+											type="username"
+											value={userInDB?.username ?? ''}
+											onChange={onChangeUsernameHandler}
+										/>
+									</div>
+									<div className="text-darkGray text-xs text-center mt-3">
+										Followers
+									</div>
+								</div>
+								<div className="flex flex-col w-20">
+									<div className="text-darkDesaturatedBlue font-bold text-center">
+										803K
+									</div>
+									<div className="text-darkGray text-xs text-center mt-3">
+										Likes
+									</div>
+								</div>
+								<div className="flex flex-col w-20">
+									<div className="text-darkDesaturatedBlue font-bold text-center">
+										1.4K
+									</div>
+									<div className="text-darkGray text-xs text-center mt-3">
+										Photos
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 
