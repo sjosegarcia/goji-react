@@ -12,7 +12,9 @@ export default async function getUserByUid(
 				'Access-Control-Allow-Origin': '*',
 			},
 		}
-	);
-	if (res.status == 400) return null;
-	return res.json();
+	).then((res) => {
+		if (res.status === 400) return null;
+		return res.json();
+	});
+	return res;
 }

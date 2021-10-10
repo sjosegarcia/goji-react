@@ -1,95 +1,79 @@
 import React, { FC, useState } from 'react';
-import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Login, UserInDB } from 'types/user.interface';
-import { auth, firebaseAuthProviders } from '../lib/firebase';
-import { useHistory } from 'react-router';
-import storeIdToken from 'lib/token/storeIdToken';
+import { Login } from 'types/user.interface';
+import { appleAuth, auth, googleAuth } from '../lib/firebase';
 import { User } from '@firebase/auth-types';
+import getAuthenticatedUser from 'lib/user/endpoints/getAuthenticatedUser';
+import { useUser } from 'Hooks';
+
+import { getUserInDB } from 'lib/user/database/getUserInDB';
+import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
+import { Redirect } from 'react-router-dom';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
-import getAuthenticatedUser from 'lib/users/getAuthenticatedUser';
-import storeUser from 'lib/users/storeUser';
-import newUser from 'lib/users/newUsers';
-import getUserByUid from 'lib/users/getUserByUid';
-import { useSessionContext } from 'contexts/SessionContext';
+
+const schema = yup.object().shape({
+	email: yup
+		.string()
+		.email('Please provide a valid email address')
+		.required('Please provide a valid email address'),
+	password: yup.string().required('Please provide a valid password'),
+});
+
+const handleSignIn = async (user: User | null) => {
+	if (!user) return null;
+	const userInDB = await getUserInDB(user);
+	const idToken = await user.getIdToken(true);
+	return await getAuthenticatedUser(idToken);
+};
 
 const LoginForms: FC = () => {
-	const googleAuth = new firebaseAuthProviders.GoogleAuthProvider();
-	const appleAuth = new firebaseAuthProviders.OAuthProvider('apple.com');
-
-	const [firebaseUser, setFirebaseUser] = useState<User | undefined>();
-	const [authError, setAuthError] = useState<FirebaseAuthErrors | undefined>();
+	const [user] = useUser();
+	const [authError, setAuthErrors] = useState<FirebaseAuthErrors | null>();
 	const [rememberMe, setRememberMe] = useState(false);
 
-	const [session, setSession] = useSessionContext();
-	const history = useHistory();
+	const signInWithGoogle = async () => {
+		googleAuth.addScope('profile');
+		return await auth.signInWithPopup(googleAuth).then(
+			async function (result) {
+				const signedIn = await handleSignIn(result.user);
+			},
+			function (error: FirebaseAuthErrors) {
+				setAuthErrors(error);
+			}
+		);
+	};
 
-	const handleLogin = () => {
-		setSession({ ...session });
-		history.push(session.redirectPath);
+	const signInWithApple = async () => {
+		return await auth.signInWithPopup(appleAuth).then(
+			async function (result) {
+				const signedIn = await handleSignIn(result.user);
+			},
+			function (error: FirebaseAuthErrors) {
+				setAuthErrors(error);
+			}
+		);
+	};
+
+	const signInWithEmailAndPassword = async (
+		email: string | null,
+		password: string | null
+	) => {
+		if (!email || !password) return null;
+		return await auth.signInWithEmailAndPassword(email, password).then(
+			async function (result) {
+				const signedIn = await handleSignIn(result.user);
+			},
+			function (error: FirebaseAuthErrors) {
+				setAuthErrors(error);
+			}
+		);
 	};
 
 	const rememberMeChecked = () => {
 		setRememberMe(!rememberMe);
-		auth.setPersistence(rememberMe ? 'session' : 'none');
+		auth.setPersistence(rememberMe ? 'local' : 'none');
 	};
-
-	const retreiveUserByUid = async (uid: string) => {
-		if (!uid) return null;
-		const userInDB = await getUserByUid(uid);
-		return userInDB;
-	};
-
-	const createNewUserInDB = async (firebaseUser: User) => {
-		if (!firebaseUser) return null;
-		const newDBUser = await newUser(
-			firebaseUser.uid,
-			undefined,
-			undefined,
-			firebaseUser.email ?? undefined,
-			firebaseUser.photoURL ?? undefined
-		);
-		return newDBUser;
-	};
-
-	const processUser = async (userInDB: UserInDB | null, user: User) => {
-		if (!userInDB) await createNewUserInDB(user);
-		const token = user.getIdToken(true);
-		setFirebaseUser(user);
-		await storeIdToken(token);
-		const authenticatedUser = await getAuthenticatedUser();
-		storeUser(authenticatedUser);
-	};
-
-	const signInWithGoogle = async () => {
-		googleAuth.addScope('profile');
-		const gAuth = auth.signInWithPopup(googleAuth);
-		const user = (await gAuth).user;
-		if (!user) return null;
-		const userInDB = await retreiveUserByUid(user.uid);
-		await processUser(userInDB, user);
-		handleLogin();
-		return gAuth;
-	};
-
-	const signInWithApple = async () => {
-		const aAuth = auth.signInWithPopup(appleAuth);
-		const user = (await aAuth).user;
-		if (!user) return null;
-		const userInDB = await retreiveUserByUid(user.uid);
-		await processUser(userInDB, user);
-		handleLogin();
-		return appleAuth;
-	};
-
-	const schema = yup.object().shape({
-		email: yup
-			.string()
-			.email('Please provide a valid email address')
-			.required('Please provide a valid email address'),
-		password: yup.string().required('Please provide a valid password'),
-	});
 
 	const {
 		register,
@@ -101,26 +85,13 @@ const LoginForms: FC = () => {
 	});
 
 	const onSubmit: SubmitHandler<Login> = async (data) => {
-		auth
-			.signInWithEmailAndPassword(data.email, data.password)
-			.then(async (userCredentials) => {
-				if (!userCredentials) return;
-				const user = userCredentials.user;
-				if (!user) return;
-				setFirebaseUser(user);
-				let idToken = user.getIdToken();
-				storeIdToken(idToken);
-				const userInDB = await getAuthenticatedUser();
-				storeUser(userInDB);
-				handleLogin();
-			})
-			.catch((error: FirebaseAuthErrors) => {
-				setAuthError(error);
-			});
+		signInWithEmailAndPassword(data.email, data.password);
 	};
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
+
+	if (user && user !== 'NOT_YET_LOADED') return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">

@@ -5,18 +5,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { UserInDB } from 'types/user.interface';
 import cookie from 'react-cookies';
 import { UserUpdate } from 'types/user.interface';
-import updateUser from 'lib/users/updateUser';
+import updateUser from 'lib/user/endpoints/updateUser';
 import { auth } from 'lib/firebase';
+import { getUserInDB } from 'lib/user/database/getUserInDB';
+import { useUser } from 'Hooks';
+import { Redirect } from 'react-router-dom';
 
 const ProfileForms: FC = () => {
-	const [userInDB, setUserInDB] = useState<UserInDB | undefined>(
-		cookie.load('user') as UserInDB
-	);
+	const [user] = useUser();
+	const [userInDB, setUserInDB] = useState<UserInDB | null>(null);
 
 	useEffect(() => {
-		const updateUser = () => {
-			const user = cookie.load('user') as UserInDB;
-			setUserInDB(user);
+		const updateUser = async () => {
+			setUserInDB(await getUserInDB(user));
 		};
 		updateUser();
 	}, []);
@@ -102,6 +103,8 @@ const ProfileForms: FC = () => {
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
+
+	//	if (user && user !== 'NOT_YET_LOADED') return <Redirect to="/" />;
 
 	return (
 		<>

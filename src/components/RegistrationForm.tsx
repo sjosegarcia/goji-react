@@ -4,44 +4,36 @@ import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
-import { Redirect, useHistory } from 'react-router-dom';
-import newUser from 'lib/users/newUsers';
-import storeIdToken from 'lib/token/storeIdToken';
+import { Redirect } from 'react-router-dom';
 import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
-import storeUser from 'lib/users/storeUser';
-import { useSessionContext } from 'contexts/SessionContext';
+import { getUserInDB } from 'lib/user/database/getUserInDB';
+import getAuthenticatedUser from 'lib/user/endpoints/getAuthenticatedUser';
+import { useUser } from 'Hooks';
+
+const schema = yup.object().shape({
+	firstname: yup.string().max(20).required('Please provide your first name'),
+	lastname: yup.string().required('Please provide your last name'),
+	email: yup
+		.string()
+		.email('Please provide a valid email address')
+		.required('Please provide a valid email address'),
+	password: yup
+		.string()
+		.required('Please provide a valid password')
+		.matches(
+			/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+			'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character'
+		),
+	passwordConfirmation: yup
+		.string()
+		.required('Please confirm your password')
+		.oneOf([yup.ref('password'), null], 'Passwords do not match'),
+});
 
 const RegistrationForms: FC = () => {
-	const schema = yup.object().shape({
-		firstname: yup.string().max(20).required('Please provide your first name'),
-		lastname: yup.string().required('Please provide your last name'),
-		email: yup
-			.string()
-			.email('Please provide a valid email address')
-			.required('Please provide a valid email address'),
-		password: yup
-			.string()
-			.required('Please provide a valid password')
-			.matches(
-				/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-				'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character'
-			),
-		passwordConfirmation: yup
-			.string()
-			.required('Please confirm your password')
-			.oneOf([yup.ref('password'), null], 'Passwords do not match'),
-	});
-
-	const [user, setUser] = useState<User | undefined>();
-	const [error, setError] = useState<FirebaseAuthErrors | undefined>();
-	const [session, setSession] = useSessionContext();
-	const history = useHistory();
-
-	const handleLogin = () => {
-		setSession({ ...session });
-		history.push(session.redirectPath);
-	};
+	const [user] = useUser();
+	const [authError, setAuthErrors] = useState<FirebaseAuthErrors | null>();
 
 	const {
 		register,
@@ -59,31 +51,23 @@ const RegistrationForms: FC = () => {
 	});
 
 	const onSubmit: SubmitHandler<UserVerify> = async (data) => {
-		await auth
-			.createUserWithEmailAndPassword(data.email, data.password)
-			.then(async (userCredentials) => {
-				if (!userCredentials) return;
-				const user = userCredentials.user;
-				if (!user) return;
-				setUser(user);
-				let idToken = user.getIdToken();
-				await storeIdToken(idToken);
-				let newUserInDB = await newUser(
-					user.uid,
-					data.firstname,
-					data.lastname,
-					data.email
-				);
-				storeUser(newUserInDB);
-				handleLogin();
-			})
-			.catch((error: FirebaseAuthErrors) => {
-				setError(error);
-			});
+		await auth.createUserWithEmailAndPassword(data.email, data.password).then(
+			async function (result) {
+				if (!result.user) return null;
+				const userInDB = await getUserInDB(result.user);
+				const idToken = await result.user.getIdToken();
+				return await getAuthenticatedUser(idToken);
+			},
+			function (error: FirebaseAuthErrors) {
+				setAuthErrors(error);
+			}
+		);
 	};
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
+
+	if (user && user !== 'NOT_YET_LOADED') return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
@@ -187,9 +171,9 @@ const RegistrationForms: FC = () => {
 							)}
 						</div>
 						<div className="mt-8">
-							{error && (
+							{authError && (
 								<span className="text-bold text-xs text-red-500">
-									{error.message}
+									{authError.message}
 								</span>
 							)}
 							<button

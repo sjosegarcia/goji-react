@@ -1,12 +1,14 @@
 import { UserInDB } from 'types/user.interface';
-import cookie from 'react-cookies';
+import { User } from '@firebase/auth-types';
 
-export default async function getAuthenticatedUser(): Promise<UserInDB> {
-	const token = cookie.load('idToken');
+export default async function getAuthenticatedUser(
+	idToken: string
+): Promise<UserInDB | null> {
+	if (!idToken) return null;
 	const res = await fetch(`${process.env.REACT_APP_FULL_BACKEND_URL}/user/me`, {
 		method: 'GET',
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${idToken}`,
 			'Content-Type': 'application/json',
 			'Access-Control-Allow-Origin': '*',
 		},

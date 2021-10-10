@@ -1,38 +1,35 @@
 import React, { useEffect } from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from 'lib/firebase';
+import { useUser } from 'Hooks';
+import firebase from 'firebase/app';
 
 export type ProtectedRouteProps = {
-	authenticationPath: string;
-	redirectPath: string;
-	setRedirectPath: (path: string) => void;
+	requiresAuthentication: boolean;
 } & RouteProps;
 
 export default function ProtectedRoute({
-	authenticationPath,
-	redirectPath,
-	setRedirectPath,
+	requiresAuthentication,
 	...routeProps
 }: ProtectedRouteProps) {
-	const currentLocation = useLocation();
-	const [user, loading] = useAuthState(auth);
-
-	useEffect(() => {
-		if (!user) setRedirectPath(currentLocation.pathname);
-		if (user && redirectPath !== '') setRedirectPath('');
-	}, [user]);
-
-	if (loading) return null;
-	if (user) {
-		return <Route {...routeProps} />;
-	} else {
-		return (
-			<Redirect
-				to={{
-					pathname: user ? redirectPath : authenticationPath,
-				}}
-			/>
-		);
+	const [user] = useUser();
+	if (requiresAuthentication) {
+		if (!user) {
+			return (
+				<Redirect
+					to={{
+						pathname: '/login',
+					}}
+				/>
+			);
+		}
+		if (user === 'NOT_YET_LOADED')
+			return (
+				<div className="justify-center w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
+					<span className="text-yellow-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0">
+						<i className="fas fa-circle-notch fa-spin fa-5x"></i>
+					</span>
+				</div>
+			);
 	}
+	return <Route {...routeProps} />;
 }

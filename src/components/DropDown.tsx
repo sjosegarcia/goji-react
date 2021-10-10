@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
-import { auth } from '../lib/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import signOut from 'lib/token/signOut';
+import { useUser } from 'Hooks';
 
 type DropDownProps = {
 	isOpen: boolean;
@@ -10,7 +9,7 @@ type DropDownProps = {
 };
 
 const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
-	const [user] = useAuthState(auth);
+	const [user] = useUser();
 
 	return (
 		<div
@@ -33,9 +32,14 @@ const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 			<Link to="/social" className="p-4">
 				Social
 			</Link>
-			{user && (
+			{user && user !== 'NOT_YET_LOADED' && (
 				<Link to="/profile" className="p-4">
 					Profile
+				</Link>
+			)}
+			{user && user !== 'NOT_YET_LOADED' && (
+				<Link to="/courses" className="p-4">
+					Courses
 				</Link>
 			)}
 			{!user && (
@@ -43,12 +47,7 @@ const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 					Login
 				</Link>
 			)}
-			{user && (
-				<Link to="/course" className="p-4">
-					Courses
-				</Link>
-			)}
-			{user && (
+			{user && user !== 'NOT_YET_LOADED' && (
 				<Link to="/" onClick={signOut} className="p-4">
 					Sign Out
 				</Link>

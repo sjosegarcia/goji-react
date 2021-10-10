@@ -1,17 +1,14 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../lib/firebase';
-import removeIdToken from 'lib/token/removeIdToken';
-import removeUser from 'lib/users/removeUser';
 import signOut from 'lib/token/signOut';
+import { useUser } from 'Hooks';
 
 type NavbarProps = {
 	toggle: () => void;
 };
 
 const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
-	const [user] = useAuthState(auth);
+	const [user] = useUser();
 
 	return (
 		<nav
@@ -50,9 +47,14 @@ const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 				<Link to="/social" className="p-4">
 					Social
 				</Link>
-				{user && (
+				{user && user !== 'NOT_YET_LOADED' && (
 					<Link to="/profile" className="p-4">
 						Profile
+					</Link>
+				)}
+				{user && user !== 'NOT_YET_LOADED' && (
+					<Link to="/courses" className="p-4">
+						Courses
 					</Link>
 				)}
 				{!user && (
@@ -60,12 +62,7 @@ const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 						Login
 					</Link>
 				)}
-				{user && (
-					<Link to="/course" className="p-4">
-						Courses
-					</Link>
-				)}
-				{user && (
+				{user && user !== 'NOT_YET_LOADED' && (
 					<Link to="/" onClick={signOut} className="p-4">
 						Sign Out
 					</Link>

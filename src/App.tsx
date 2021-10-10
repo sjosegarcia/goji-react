@@ -10,12 +10,14 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Course from './pages/Course';
 import ForgotPassword from 'pages/ForgotPassword';
-import ProtectedRoute, { ProtectedRouteProps } from 'components/ProtectedRoute';
-import { useSessionContext } from 'contexts/SessionContext';
+import { useUser } from './Hooks';
+import firebase from 'firebase/app';
+import ProtectedRoute from 'components/ProtectedRoute';
 
 function App() {
+	const [user] = useUser();
+
 	const [isOpen, setIsOpen] = useState(false);
-	const [sessionContext, updateSessionContext] = useSessionContext();
 
 	const toggle = () => {
 		setIsOpen(!isOpen);
@@ -35,15 +37,13 @@ function App() {
 		};
 	});
 
-	const setRedirectPath = (path: string) => {
-		updateSessionContext({ ...sessionContext, redirectPath: path });
-	};
-
-	const defaultProtectedRouteProps: ProtectedRouteProps = {
-		authenticationPath: '/login',
-		redirectPath: sessionContext.redirectPath,
-		setRedirectPath: setRedirectPath,
-	};
+	/*if (!user)
+		firebase
+			.auth()
+			.signInAnonymously()
+			.catch((error) => {
+				console.log(error);
+			});*/
 
 	return (
 		<>
@@ -55,18 +55,30 @@ function App() {
 				<Route path="/docs" />
 				<Route path="/social" />
 				<ProtectedRoute
-					{...defaultProtectedRouteProps}
-					path="/profile"
-					component={Profile}
+					path="/login"
+					component={Login}
+					requiresAuthentication={false}
 				/>
 				<ProtectedRoute
-					{...defaultProtectedRouteProps}
-					path="/course"
-					component={Course}
+					path="/signup"
+					component={Signup}
+					requiresAuthentication={false}
 				/>
-				<Route path="/login" component={Login} />
-				<Route path="/signup" component={Signup} />
-				<Route path="/forgot-password" component={ForgotPassword} />
+				<ProtectedRoute
+					path="/courses"
+					component={Course}
+					requiresAuthentication={true}
+				/>
+				<ProtectedRoute
+					path="/profile"
+					component={Profile}
+					requiresAuthentication={true}
+				/>
+				<ProtectedRoute
+					path="/forgot-password"
+					component={ForgotPassword}
+					requiresAuthentication={false}
+				/>
 			</Switch>
 			<Footer />
 		</>
