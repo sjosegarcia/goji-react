@@ -5,7 +5,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
 import { ForgotPassword } from 'types/user.interface';
 import { useUser } from 'Hooks';
-import { Redirect } from 'react-router-dom';
 
 const schema = yup.object().shape({
 	email: yup
@@ -34,8 +33,6 @@ const ForgotPasswordForms: FC = () => {
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
-
-	if (user && user !== 'NOT_YET_LOADED') return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">

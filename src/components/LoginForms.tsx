@@ -91,8 +91,6 @@ const LoginForms: FC = () => {
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
 
-	if (user && user !== 'NOT_YET_LOADED') return <Redirect to="/" />;
-
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
 			<div className="py-6">
