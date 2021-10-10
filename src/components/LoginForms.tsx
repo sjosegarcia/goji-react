@@ -9,7 +9,6 @@ import { useUser } from 'Hooks';
 
 import { getUserInDB } from 'lib/user/database/getUserInDB';
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
-import { Redirect } from 'react-router-dom';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
 
 const schema = yup.object().shape({

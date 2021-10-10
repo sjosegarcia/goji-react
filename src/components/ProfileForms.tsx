@@ -9,7 +9,6 @@ import updateUser from 'lib/user/endpoints/updateUser';
 import { auth } from 'lib/firebase';
 import { getUserInDB } from 'lib/user/database/getUserInDB';
 import { useUser } from 'Hooks';
-import { Redirect } from 'react-router-dom';
 
 const ProfileForms: FC = () => {
 	const [user] = useUser();

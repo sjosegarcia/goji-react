@@ -4,8 +4,6 @@ import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
-import { Redirect } from 'react-router-dom';
-import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
 import { getUserInDB } from 'lib/user/database/getUserInDB';
 import getAuthenticatedUser from 'lib/user/endpoints/getAuthenticatedUser';
