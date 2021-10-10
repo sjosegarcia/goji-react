@@ -4,6 +4,8 @@ import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { auth } from '../lib/firebase';
+import { Redirect } from 'react-router-dom';
+import { User } from '@firebase/auth-types';
 import { FirebaseAuthErrors } from 'types/firebase.interface';
 import { getUserInDB } from 'lib/user/database/getUserInDB';
 import getAuthenticatedUser from 'lib/user/endpoints/getAuthenticatedUser';
@@ -64,6 +66,8 @@ const RegistrationForms: FC = () => {
 
 	const textBoxColor = (error?: FieldError) =>
 		error ? 'border-red-500 bg-red-200' : 'border-gray-300 bg-gray-200';
+
+	if (user && user !== 'NOT_YET_LOADED') return <Redirect to="/" />;
 
 	return (
 		<div className="bg-white h-screen flex flex-col justify-center">
