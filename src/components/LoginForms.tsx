@@ -28,7 +28,7 @@ const handleSignIn = async (user: User | null) => {
 };
 
 const LoginForms: FC = () => {
-	const [user] = useUser();
+	const user = useUser();
 	const [authError, setAuthErrors] = useState<FirebaseAuthErrors | null>();
 	const [rememberMe, setRememberMe] = useState(false);
 

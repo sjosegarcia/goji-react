@@ -32,7 +32,7 @@ const schema = yup.object().shape({
 });
 
 const RegistrationForms: FC = () => {
-	const [user] = useUser();
+	const user = useUser();
 	const [authError, setAuthErrors] = useState<FirebaseAuthErrors | null>();
 
 	const {

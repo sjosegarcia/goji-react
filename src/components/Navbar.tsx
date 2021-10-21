@@ -1,14 +1,16 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import signOut from 'lib/token/signOut';
-import { useUser } from 'Hooks';
+import { useUser, useWallet } from 'Hooks';
+import WalletButton from './WalletButton';
 
 type NavbarProps = {
 	toggle: () => void;
 };
 
 const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
-	const [user] = useUser();
+	const user = useUser();
+	const isLoggedIn = user && user !== 'NOT_YET_LOADED';
 
 	return (
 		<nav
@@ -47,26 +49,27 @@ const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 				<Link to="/social" className="p-4">
 					Social
 				</Link>
-				{user && user !== 'NOT_YET_LOADED' && (
-					<Link to="/profile" className="p-4">
-						Profile
-					</Link>
-				)}
-				{user && user !== 'NOT_YET_LOADED' && (
-					<Link to="/courses" className="p-4">
-						Courses
-					</Link>
-				)}
 				{!user && (
 					<Link to="/login" className="p-4">
 						Login
 					</Link>
 				)}
-				{user && user !== 'NOT_YET_LOADED' && (
+				{isLoggedIn && (
+					<Link to="/profile" className="p-4">
+						Profile
+					</Link>
+				)}
+				{isLoggedIn && (
+					<Link to="/courses" className="p-4">
+						Courses
+					</Link>
+				)}
+				{isLoggedIn && (
 					<Link to="/" onClick={signOut} className="p-4">
 						Sign Out
 					</Link>
 				)}
+				{isLoggedIn && <WalletButton />}
 			</div>
 		</nav>
 	);

@@ -15,7 +15,7 @@ const schema = yup.object().shape({
 });
 
 const ForgotPasswordForms: FC = () => {
-	const [user] = useUser();
+	const user = useUser();
 	const [emailSent, setEmailSent] = useState(false);
 	const {
 		register,
@@ -38,39 +38,71 @@ const ForgotPasswordForms: FC = () => {
 	if (user && user !== 'NOT_YET_LOADED') return <Redirect to="/" />;
 
 	return (
-		<div className="bg-white h-screen flex flex-col justify-center">
-			<div className="py-6">
-				<div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
-					<div className="w-full p-8 lg:w">
-						<h2 className="text-2xl font-semibold text-gray-700 text-center">
-							Forgot Password
-						</h2>
-						<div className="mt-4">
-							<label className="block text-gray-700 text-sm font-bold mb-2">
-								Email Address
-							</label>
-							<input
-								{...register('email')}
-								className={`text-gray-700 focus:outline-none focus:shadow-outline border  ${textBoxColor(
-									errors.email
-								)} rounded py-2 px-4 block w-full appearance-none`}
-								type="email"
-							/>
+		<div className="container mx-auto h-screen flex flex-col justify-center">
+			<div className="flex justify-center px-6 my-12 bg-gray">
+				<div className="w-full xl:w-3/4 lg:w-11/12 flex">
+					<div
+						className="w-full h-auto bg-gray-400 hidden lg:block lg:w-1/2 bg-cover rounded-l-lg"
+						style={{
+							backgroundImage: `url('https://images.unsplash.com/photo-1546514714-df0ccc50d7bf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=667&q=80')`,
+						}}
+					></div>
+					<div className="w-full lg:w-1/2 bg-white p-5 rounded-lg lg:rounded-l-none">
+						<div className="px-8 mb-4 text-center">
+							<h3 className="pt-4 mb-2 text-2xl">Forgot Your Password?</h3>
+							<p className="mb-4 text-sm text-gray-700">
+								We get it, stuff happens. Just enter your email address below
+								and we will send you a link to reset your password!
+							</p>
+						</div>
+						<form className="px-8 pt-6 pb-8 mb-4 bg-white rounded">
+							<div className="mb-4">
+								<label className="block mb-2 text-sm font-bold text-gray-700">
+									Email
+								</label>
+								<input
+									{...register('email')}
+									className={`w-full px-3 py-2 text-sm leading-tight ${textBoxColor(
+										errors.email
+									)}  border rounded shadow appearance-none focus:outline-none focus:shadow-outline `}
+									id="email"
+									type="email"
+									placeholder="Enter Email Address..."
+								/>
+							</div>
 							{errors.email && (
 								<span className="text-bold text-xs text-red-500">
 									{errors.email.message}
 								</span>
 							)}
-						</div>
-						<div className="mt-8">
-							<button
-								onClick={handleSubmit(onSubmit)}
-								disabled={emailSent}
-								className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300"
-							>
-								Send Email
-							</button>
-						</div>
+							<div className="mb-6 text-center">
+								<button
+									className="bg-yellow-500 text-gray-700 font-bold py-2 px-4 w-full rounded hover:bg-yellow-300"
+									onClick={handleSubmit(onSubmit)}
+									disabled={emailSent}
+									type="button"
+								>
+									Reset Password
+								</button>
+							</div>
+							<hr className="mb-6 border-t" />
+							<div className="text-center">
+								<a
+									className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
+									href="/signup"
+								>
+									Create an Account!
+								</a>
+							</div>
+							<div className="text-center">
+								<a
+									className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
+									href="/login"
+								>
+									Already have an account? Login!
+								</a>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>

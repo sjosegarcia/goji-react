@@ -9,7 +9,7 @@ type DropDownProps = {
 };
 
 const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
-	const [user] = useUser();
+	const user = useUser();
 
 	return (
 		<div
