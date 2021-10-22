@@ -1,19 +1,15 @@
 import { useWallet } from 'Hooks';
 import React, { FC, useState } from 'react';
 import connect from 'lib/zilliqa/zilpay';
-import Tippy, { useSingleton } from '@tippyjs/react';
 import { shortenAddress } from 'lib/zilliqa/shortenAddress';
 import copyTextToClipboard from 'lib/util/Clipboard';
 import CirleProgressIndicator from './CircleProgressIndicator';
+import Button from './Button';
 import 'tippy.js/dist/tippy.css';
-import { boolean } from 'yup/lib/locale';
 
 const WalletButton: FC = () => {
-	const walletAccount = useWallet();
+	const [walletAccount] = useWallet();
 	const [isCopied, setIsCopied] = useState(false);
-	const [source, target] = useSingleton({
-		overrides: ['placement'],
-	});
 
 	const copyToClipboard = async () => {
 		if (
@@ -38,62 +34,45 @@ const WalletButton: FC = () => {
 
 	const displayWalletButton = () => {
 		if (!walletAccount) return <CirleProgressIndicator />;
-		if (walletAccount === 'ZILPAY_NOT_INSTALLED') {
+		if (walletAccount === 'ZILPAY_NOT_INSTALLED')
 			return (
-				<button
-					type="submit"
+				<Button
+					toolTipPlacement={'bottom'}
+					toolTipMsg={'Install'}
+					type={'button'}
+					buttonText={'Install Zilpay'}
 					onClick={connect}
-					className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-yellow-500 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-				>
-					Install Zilpay
-				</button>
-			);
-		}
-		if (walletAccount === 'ZILPAY_NOT_UNLOCKED') {
-			return (
-				<button
-					type="submit"
-					onClick={connect}
-					className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-yellow-500 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-				>
-					Unlock Zilpay
-				</button>
-			);
-		}
-		if (walletAccount === 'ZILPAY_NOT_CONNECTED') {
-			return (
-				<button
-					type="submit"
-					onClick={connect}
-					className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-yellow-500 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-				>
-					Connect Zilpay
-				</button>
-			);
-		}
-		return (
-			<>
-				<Tippy
-					singleton={source}
-					delay={500}
-					// Uncomment for transitions!
-					// moveTransition="transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)"
 				/>
+			);
+		if (walletAccount === 'ZILPAY_NOT_UNLOCKED')
+			return (
+				<Button
+					toolTipPlacement={'bottom'}
+					toolTipMsg={'Unlock'}
+					type={'button'}
+					buttonText={'Unlock Zilpay'}
+					onClick={connect}
+				/>
+			);
+		if (walletAccount === 'ZILPAY_NOT_CONNECTED')
+			return (
+				<Button
+					toolTipPlacement={'bottom'}
+					toolTipMsg={'Connect'}
+					type={'button'}
+					buttonText={'Connect to Zilpay'}
+					onClick={connect}
+				/>
+			);
 
-				<Tippy
-					className="z-10"
-					content={!isCopied ? 'Copy' : 'Copied'}
-					singleton={target}
-					placement="left"
-				>
-					<button
-						onClick={copyToClipboard}
-						className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-yellow-500 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-					>
-						{shortenAddress(walletAccount.bech32)}
-					</button>
-				</Tippy>
-			</>
+		return (
+			<Button
+				toolTipPlacement={'bottom'}
+				toolTipMsg={!isCopied ? 'Copy' : 'Copied'}
+				type={'button'}
+				buttonText={shortenAddress(walletAccount.bech32)}
+				onClick={copyToClipboard}
+			/>
 		);
 	};
 	return <>{displayWalletButton()}</>;

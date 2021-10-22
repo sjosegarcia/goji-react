@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import signOut from 'lib/token/signOut';
 import { useUser } from 'Hooks';
+import WalletButton from './WalletButton';
 
 type DropDownProps = {
 	isOpen: boolean;
@@ -10,6 +11,7 @@ type DropDownProps = {
 
 const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 	const user = useUser();
+	const isLoggedIn = user && user !== 'NOT_YET_LOADED';
 
 	return (
 		<div
@@ -32,12 +34,12 @@ const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 			<Link to="/social" className="p-4">
 				Social
 			</Link>
-			{user && user !== 'NOT_YET_LOADED' && (
+			{isLoggedIn && (
 				<Link to="/profile" className="p-4">
 					Profile
 				</Link>
 			)}
-			{user && user !== 'NOT_YET_LOADED' && (
+			{isLoggedIn && (
 				<Link to="/courses" className="p-4">
 					Courses
 				</Link>
@@ -47,11 +49,12 @@ const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 					Login
 				</Link>
 			)}
-			{user && user !== 'NOT_YET_LOADED' && (
+			{isLoggedIn && (
 				<Link to="/" onClick={signOut} className="p-4">
 					Sign Out
 				</Link>
 			)}
+			{isLoggedIn && <WalletButton />}
 		</div>
 	);
 };

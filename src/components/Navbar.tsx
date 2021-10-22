@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import signOut from 'lib/token/signOut';
 import { useUser, useWallet } from 'Hooks';
-import WalletButton from './WalletButton';
+import AccountPopover from './AccountPopover';
 
 type NavbarProps = {
 	toggle: () => void;
@@ -36,7 +36,7 @@ const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 					/>
 				</svg>
 			</div>
-			<div className="pr-8 md:block  hidden">
+			<div className="pr-8 md:block hidden">
 				<Link to="/" className="p-4">
 					Home
 				</Link>
@@ -69,7 +69,7 @@ const Navbar: FC<NavbarProps> = (props: NavbarProps) => {
 						Sign Out
 					</Link>
 				)}
-				{isLoggedIn && <WalletButton />}
+				{isLoggedIn && <AccountPopover />}
 			</div>
 		</nav>
 	);

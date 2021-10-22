@@ -48,6 +48,12 @@ export function getObservableAccount(): any {
 	return accountStreamChanged;
 }
 
+export function getObservableNetwork(): any {
+	const zilpay = (window as any).zilPay;
+	const networkStreamChanged = zilpay.wallet.observableNetwork();
+	return networkStreamChanged;
+}
+
 export function getDefaultWallet(): any {
 	const zilpay = (window as any).zilPay;
 	return zilpay.wallet.defaultAccount;
