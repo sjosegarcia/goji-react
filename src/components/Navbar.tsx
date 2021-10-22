@@ -1,7 +1,7 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import signOut from 'lib/token/signOut';
-import { useUser, useWallet } from 'Hooks';
+import { useUser } from 'Hooks';
 import AccountPopover from './AccountPopover';
 
 type NavbarProps = {
