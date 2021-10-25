@@ -46,7 +46,7 @@ const AccountPopover: FC = () => {
 				<>
 					<Popover.Button className="menu-item-active inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-yellow-500 hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
 						{displayWalletText()}
-						<ChevronDown size={14} className="" />
+						<ChevronDown size={14} />
 					</Popover.Button>
 					<Transition
 						show={open}

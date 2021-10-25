@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import Card from '../components/Card';
 
-const Course: FC = () => {
+const course: FC = () => {
 	return (
 		<>
 			<Card />
@@ -9,4 +9,4 @@ const Course: FC = () => {
 	);
 };
 
-export default Course;
+export default course;

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import Hero from '../components/Hero';
 
-const Home: FC = () => {
+const home: FC = () => {
 	return (
 		<>
 			<Hero />
@@ -9,4 +9,4 @@ const Home: FC = () => {
 	);
 };
 
-export default Home;
+export default home;

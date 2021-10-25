@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import ProfileForms from '../components/ProfileForms';
 
-const Profile: FC = () => {
+const profile: FC = () => {
 	return (
 		<>
 			<ProfileForms />
@@ -9,4 +9,4 @@ const Profile: FC = () => {
 	);
 };
 
-export default Profile;
+export default profile;

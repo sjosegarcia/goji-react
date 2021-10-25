@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import LoginForms from '../components/LoginForms';
 
-const Login: FC = () => {
+const login: FC = () => {
 	return (
 		<>
 			<LoginForms />
@@ -9,4 +9,4 @@ const Login: FC = () => {
 	);
 };
 
-export default Login;
+export default login;

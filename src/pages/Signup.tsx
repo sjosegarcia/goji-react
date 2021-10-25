@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import RegistrationForms from 'components/RegistrationForm';
 
-const Signup: FC = () => {
+const signup: FC = () => {
 	return (
 		<>
 			<RegistrationForms />
@@ -9,4 +9,4 @@ const Signup: FC = () => {
 	);
 };
 
-export default Signup;
+export default signup;

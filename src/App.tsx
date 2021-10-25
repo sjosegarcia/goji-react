@@ -1,16 +1,16 @@
 import React, { useState, useEffect, FC } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
-import Signup from 'pages/Signup';
-import Home from './pages/Home';
+import signup from 'pages/signup';
+import home from './pages';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Dropdown from './components/DropDown';
-import Login from './pages/Login';
-import Profile from './pages/Profile';
-import Course from './pages/Course';
-import ForgotPassword from 'pages/ForgotPassword';
-import { useUser, useWallet } from './Hooks';
+import login from './pages/login';
+import profile from './pages/profile';
+import course from './pages/course';
+import forgotPassword from 'pages/forgotPassword';
+import { useUser } from './Hooks';
 import firebase from 'firebase/app';
 import ProtectedRoute from 'components/ProtectedRoute';
 import CirleProgressIndicator from 'components/CircleProgressIndicator';
@@ -50,39 +50,41 @@ function App() {
 
 	return (
 		<>
-			<Navbar toggle={toggle} />
-			<Dropdown isOpen={isOpen} toggle={toggle} />
-			<Switch>
-				<Route path="/" exact component={Home} />
-				<Route path="/about" />
-				<Route path="/docs" />
-				<Route path="/social" />
-				<ProtectedRoute
-					path="/login"
-					component={Login}
-					requiresAuthentication={false}
-				/>
-				<ProtectedRoute
-					path="/signup"
-					component={Signup}
-					requiresAuthentication={false}
-				/>
-				<ProtectedRoute
-					path="/courses"
-					component={Course}
-					requiresAuthentication={true}
-				/>
-				<ProtectedRoute
-					path="/profile"
-					component={Profile}
-					requiresAuthentication={true}
-				/>
-				<ProtectedRoute
-					path="/forgot-password"
-					component={ForgotPassword}
-					requiresAuthentication={false}
-				/>
-			</Switch>
+			<Router>
+				<Navbar toggle={toggle} />
+				<Dropdown isOpen={isOpen} toggle={toggle} />
+				<Switch>
+					<Route path="/" exact component={home} />
+					<Route path="/about" />
+					<Route path="/docs" />
+					<Route path="/social" />
+					<ProtectedRoute
+						path="/login"
+						component={login}
+						requiresAuthentication={false}
+					/>
+					<ProtectedRoute
+						path="/signup"
+						component={signup}
+						requiresAuthentication={false}
+					/>
+					<ProtectedRoute
+						path="/courses"
+						component={course}
+						requiresAuthentication={true}
+					/>
+					<ProtectedRoute
+						path="/profile"
+						component={profile}
+						requiresAuthentication={true}
+					/>
+					<ProtectedRoute
+						path="/forgot-password"
+						component={forgotPassword}
+						requiresAuthentication={false}
+					/>
+				</Switch>
+			</Router>
 			<Footer />
 		</>
 	);
