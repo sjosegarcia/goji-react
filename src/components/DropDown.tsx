@@ -54,7 +54,7 @@ const Dropdown: FC<DropDownProps> = (props: DropDownProps) => {
 					Sign Out
 				</Link>
 			)}
-			{isLoggedIn && <WalletButton />}
+			{/*isLoggedIn && <WalletButton />*/}
 		</div>
 	);
 };
