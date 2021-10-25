@@ -7,13 +7,13 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Dropdown from './components/DropDown';
 import login from './pages/login';
-import profile from './pages/profile';
 import course from './pages/course';
 import forgotPassword from 'pages/forgotPassword';
 import { useUser } from './Hooks';
 import firebase from 'firebase/app';
 import ProtectedRoute from 'components/ProtectedRoute';
 import CirleProgressIndicator from 'components/CircleProgressIndicator';
+import profile from 'pages/profile';
 
 function App() {
 	const user = useUser();
