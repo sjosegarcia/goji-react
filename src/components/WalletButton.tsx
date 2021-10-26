@@ -3,7 +3,7 @@ import React, { FC, useState } from 'react';
 import connect from 'lib/zilliqa/zilpay';
 import { shortenAddress } from 'lib/zilliqa/shortenAddress';
 import copyTextToClipboard from 'lib/util/Clipboard';
-import CirleProgressIndicator from './CircleProgressIndicator';
+//import CirleProgressIndicator from './CircleProgressIndicator';
 import Button from './Button';
 import 'tippy.js/dist/tippy.css';
 
@@ -33,7 +33,7 @@ const WalletButton: FC = () => {
 	};
 
 	const displayWalletButton = () => {
-		if (!walletAccount) return <CirleProgressIndicator />;
+		if (!walletAccount) return <></>; //<CirleProgressIndicator />;
 		if (walletAccount === 'ZILPAY_NOT_INSTALLED')
 			return (
 				<Button

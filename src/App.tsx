@@ -12,7 +12,7 @@ import forgotPassword from 'pages/forgotPassword';
 import { useUser } from './Hooks';
 import firebase from 'firebase/app';
 import ProtectedRoute from 'components/ProtectedRoute';
-import CirleProgressIndicator from 'components/CircleProgressIndicator';
+//import CirleProgressIndicator from 'components/CircleProgressIndicator';
 import profile from 'pages/profile';
 
 function App() {
@@ -38,7 +38,7 @@ function App() {
 		};
 	});
 
-	if (user === 'NOT_YET_LOADED') return <CirleProgressIndicator />;
+	/*if (user === 'NOT_YET_LOADED') return <CirleProgressIndicator />;*/
 
 	/*if (!user)
 		firebase

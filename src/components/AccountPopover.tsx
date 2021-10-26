@@ -5,7 +5,7 @@ import { ChevronDown, Copy } from 'react-feather';
 import { useWallet } from 'Hooks';
 import copyTextToClipboard from 'lib/util/Clipboard';
 import { shortenAddress } from 'lib/zilliqa/shortenAddress';
-import CirleProgressIndicator from './CircleProgressIndicator';
+//import CirleProgressIndicator from './CircleProgressIndicator';
 
 const AccountPopover: FC = () => {
 	const [walletAccount] = useWallet();
@@ -33,7 +33,7 @@ const AccountPopover: FC = () => {
 	};
 
 	const displayWalletText = () => {
-		if (!walletAccount) return <CirleProgressIndicator />;
+		if (!walletAccount) return ''; //<CirleProgressIndicator />;
 		if (walletAccount === 'ZILPAY_NOT_INSTALLED') return 'Install ZilPay';
 		if (walletAccount === 'ZILPAY_NOT_UNLOCKED') return 'Unlock ZilPay';
 		if (walletAccount === 'ZILPAY_NOT_CONNECTED') return 'Connect to ZilPay';
